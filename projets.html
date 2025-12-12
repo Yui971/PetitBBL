@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Projets – Chrisnaël BERIDER</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a href="#contenu" class="skip-link">Aller au contenu principal</a>
+  
+  <header>
+    <h1>Chrisnaël BERDIER</h1>
+    <p>Étudiant en BUT MMI</p>
+    
+    <!-- Bouton de basculement du thème clair/sombre -->
+    <button id="theme-toggle" aria-label="Basculer entre le mode clair et mode sombre"> 
+      <span class="sun">☀️</span>
+      <span class="moon">🌙</span>
+      <span class="sr-only">Changer le thème</span>
+    </button>
+    
+    <button id="burger" class="burger-btn" aria-expanded="false" aria-controls="nav">
+  <span class="sr-only">Ouvrir le menu</span> ☰
+</button>
+    
+    <nav id="nav" aria-label="Navigation principale" hidden>
+  <ul>
+    <li><a href="index.html">Accueil</a></li>
+    <li><a class="actif" aria-current="page" href="projets.html">Projets</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+  </header>
+
+<!-- Fil d'arianne -->
+<main id="contenu" role="main">
+  
+  <nav class="breadcrumb" aria-label="Fil d'Ariane">
+    <ol>
+      <li><a href="index.html">Accueil</a></li>  <!--LIEN vers accueil-->
+      <li aria-current="page">Projets</li>       <!-- Page actuelle (pas de lien)-->
+    </ol>
+  </nav>
+  
+ <section id="projets" aria-labelledby="titre-projets">
+    <h2 id="titre-projets">Mes Projets</h2>
+    <p>Découvrez une sélection de mes créations en design graphique et communication visuelle.</p>
+    
+    <div id="liste-projets" class="grille-projets">
+    
+<!-- Section Projets-->
+<article class="carte">
+  <img src="images/FLYER-TERRE-DE-BLUES-BERDIER-CHRISNAEL.png" alt="Flyer du Festival Terre de blues avec musiciens et couleurs orange et bleu" />
+  <h3>Flyer Festival Terre de Blues</h3>
+  
+  <!-- Métadonnées du projet -->
+  <div class="meta">
+    <span>📅 2025</span>
+    <span>🎨 Design graphique</span>
+    <span>🎵 Événementiel</span>
+  </div>
+  
+ <p class="carte-description">Création d'un Flyer promotionnel pour le Festival Terre de Blues, mettant en avant l'ambiance musicale et l'identité visuelle de l'événement avec une palette de couleurs orange et bleu dynamique.</p>
+  <button class="toggle-text">Afficher plus</button>
+  <a href="images/FLYER-TERRE-DE-BLUES-BERDIER-CHRISNAEL.png" class="btn">Voir le projet</a>  
+</article>
+  
+  <article class="carte">
+  <img src="images/Couverture-VOGUE-Tiakola-BERDIER-CHRISNAEL.png" alt="Couverture VOGUE réalisée par BERDIER CHRISNAËL comme travail personnel" />
+  <h3>Couverture de Magazine "VOGUE"</h3>
+  
+  <div class="meta">
+    <span>📅 2025</span>
+    <span>🎨 Direction artistique</span>
+    <span>📰 Design éditorial</span>
+    <span>🛠️ Canva</span>
+  </div>
+  
+  <p class="carte-description">Si Tiakola finissait en une de VOGUE, ça donnerait quoi ?
+<br><br>
+Petit Projet perso – Couverture fictive VOGUE x Tiakola
+<br><br>
+Petite expérimentation créa pour bosser mes compétences en direction artistique et design éditorial. 
+L'idée : réinventer l'univers VOGUE en mode rap français, avec Tiakola en couverture — entre lumière dramatique, typographie haut de gamme et storytelling visuel.
+<br><br>
+Objectif : travailler la composition d'une couverture percutante, maîtriser l'équilibre image/texte, et affiner la hiérarchie visuelle.
+<br><br>
+🛠️ Outil : Canva
+<br>
+📚 Inspi : les unes de Billboard, Vogue France, GQ et un peu d'esthétique streetwear.
+<br><br>
+Ce genre de projet me permet d'affiner mon œil DA, de tester des concepts sans pression et d'explorer la rencontre entre graphisme et culture urbaine.</p>
+  <button class="toggle-text">Afficher plus</button>
+  <a href="images/Couverture-VOGUE-Tiakola-BERDIER-CHRISNAEL.png" class="btn">Voir le projet</a>
+</article>
+  
+  <article class="carte">
+  <img src="images/POST-INSTA-TOUBANA.png" alt="Post promotionnel pour l'Hôtel La Toubana avec vue sur mer" />
+  <h3>Post Instagram - La Toubana</h3>
+  
+  <div class="meta">
+    <span>📅 2025</span>
+    <span>📱 Social Media</span>
+    <span>🏨 Hôtellerie luxe</span>
+    <span>🛠️ Canva</span>
+  </div>
+  
+  <p class="carte-description">Exemple de post Instagram que l'Hôtel 5 étoiles "La Toubana Hôtel and Spa" pourrait utiliser afin de promouvoir une offre promotionnelle visant à augmenter la fréquentation de clients locaux professionnels durant la basse saison. Design adapté à l'identité visuelle premium de l'établissement.</p>
+  <button class="toggle-text">Afficher plus</button>
+  <a href="images/POST-INSTA-TOUBANA.png" class="btn">Voir le projet</a>
+</article>
+   </div>
+   
+   
+  </section>
+  </main>
+  
+<footer role="contentinfo">
+  <small>© <span id="annee"></span> Chrisnaël BERDIER — BUT MMI</small>
+</footer>
+
+<button id="back-to-top" aria-label="Remonter en haut de la page">
+  🚀
+</button>
+
+<script src="app.js" defer></script>
+</body>
+</html>

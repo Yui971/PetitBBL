@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Carte de visite – Chrisnaël BERIDER</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body class="acceuil">
+  <a href="#contenu" class="skip-link">Aller au contenu principal</a>
+<header>
+<h1>Chrisnaël BERDIER</h1>
+<p>Étudiant en BUT MMI</p>
+ 
+ <!-- Bouton de basculement du thème clair/sombre -->
+ <button id="theme-toggle" aria-label="Basculer entre le mode clair et mode sombre"> 
+ <!-- aria-label : décrit la fonction du bouton pour les lecteurs d'écran -->
+    <span class="sun">☀️</span>
+ <!-- aria-hidden="true" : cache l'emoji au lecteurs d'écran (évite que "soleil emoji" soit lu ) -->
+    <span class="moon">🌙</span>
+   <!-- aria-hidden="true" : cache l'emoji au lecteurs d'écran (évite que "lune emoji" soit lu ) -->
+   <span class="sr-only">Changer le thème</span>
+  </button>
+  
+ <button id="burger" class="burger-btn" aria-expanded="false" aria-controls="nav">
+  <span class="sr-only">Ouvrir le menu</span> ☰
+</button>
+  
+  
+<nav id="nav" aria-label="Navigation principale" hidden>
+  <ul>
+    <li><a class="actif" aria-current="page" href="index.html">Accueil</a></li>
+    <li><a href="projets.html">Projets</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+  
+</header>
+<main id="contenu" role="main">
+  
+<!-- Fil d'Ariane -->
+  <nav class="breadcrumb" aria-label="Fil d'Ariane">
+    <ol>
+      <li aria-current="page">Accueil</li>
+    </ol>
+  </nav>
+
+  <section id="apropos" aria-labelledby="titre-apropos">
+    
+    
+<h2 id="titre-apropos">À propos</h2>
+<figure>
+<img src="images/Portrait-studio-Chrisna%C3%ABl-BERDIER.jpg" alt="Portrait de Chrisnaël BERDIER"
+width="240" height="240" />
+<figcaption>Portrait de Chrisnaël BERDIER</figcaption>
+</figure>
+<p>Hey, petite présentation !
+    <br>
+    J'ai pas mal de centres d'intéret notamment jouer aux jeux vidéos, écouter de la musique, 
+    regarder la foudre sur mon balcon en face de la mer, et réaliser des design promotionnel ou autre. Afin de réaliser mes design, 
+    des outils comme Canva me sont très utiles car il est très intuitif et rapide a prendre en main,
+    ce qui m'a permis de rapidement prendre mes marque. Enfin dans un futur proche, 
+    j'aspire à être d'abord Assistant Chef de projet/ Community Manager, afin d'évoluer et me former a ces postes
+     
+    </p>
+
+ </section>
+<section id="competences" aria-labelledby="titre-competences">
+<h2 id="titre-competences">Compétences</h2>
+<ul>
+<li>HTML/CSS (débutant)</li>
+<li>Design (Figma/Canva)</li>
+<li>Montage (Premiere/DaVinci)</li>
+<li>Communication</li>
+<li>Service Clientèle</li>
+<li>Réceptif aux feedbacks / Esprit d’amélioration continue</li>
+</ul>
+
+ </section>
+ 
+ 
+</main>
+<footer role="contentinfo">
+  <small>© <span id="annee"></span> Chrisnaël BERDIER — BUT MMI</small>
+</footer>
+
+<button id="back-to-top" aria-label="Remonter en haut de la page">
+  🚀
+</button>
+
+<script src="app.js" defer></script>
+</body>
+</html>

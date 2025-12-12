@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Contact – Chrisnaël BERIDER</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+   <a href="#contenu" class="skip-link">Aller au contenu principal</a>
+  
+  
+    <header>
+    <h1>Chrisnaël BERDIER</h1>
+    <p>Étudiant en BUT MMI</p>
+  
+   <!-- Bouton de basculement du thème clair/sombre -->
+ <button id="theme-toggle" aria-label="Basculer entre le mode clair et mode sombre"> 
+ <!-- aria-label : décrit la fonction du bouton pour les lecteurs d'écran -->
+    <span class="sun">☀️</span>
+ <!-- aria-hidden="true" : cache l'emoji au lecteurs d'écran (évite que "soleil emoji" soit lu ) -->
+    <span class="moon">🌙</span>
+   <!-- aria-hidden="true" : cache l'emoji au lecteurs d'écran (évite que "lune emoji" soit lu ) -->
+   <span class="sr-only">Changer le thème</span>
+  </button>
+      
+<button id="burger" class="burger-btn" aria-expanded="false" aria-controls="nav">
+  <span class="sr-only">Ouvrir le menu</span> ☰
+</button>
+    
+<nav id="nav" aria-label="Navigation principale" hidden>
+  <ul>
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="projets.html">Projets</a></li>
+    <li><a class="actif" aria-current="page" href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+  </header>
+  
+
+<main id="contenu" role="main">
+    
+  <nav class="breadcrumb" aria-label="Fil d'Ariane">
+  <ol>
+    <li><a href="index.html">Accueil</a></li>
+    <li aria-current="page">Contact</li>
+  </ol>
+</nav>
+
+<section id="contact" aria-labelledby="titre-contact">
+  <h2 id="titre-contact">Me contacter</h2>
+  
+  <div class="contact-intro">
+    <p>Vous avez un projet, une question ou une opportunité à me proposer ? N'hésitez pas à me contacter via ce formulaire ou directement par email.</p>
+    
+    <address>
+      <p>Email : <a href="mailto:berdierchrisnael@gmail.com">berdierchrisnael@gmail.com</a></p>
+      <p>Réseaux : <a href="https://www.linkedin.com/in/chrisnaël-berdier-b634a3389" rel="me">LinkedIn</a>, <a href="#" rel="me">Instagram</a></p>
+    </address>
+  </div>
+  
+  <form class="carte" 
+        aria-label="Formulaire de contact" 
+        action="contact.php" 
+        method="post"
+        novalidate>
+  
+  <!--  champ : Nom -->
+  <label for="nom">Nom</label>
+  <input id="nom" 
+         name="nom" 
+         type="text" 
+         required 
+         placeholder="Votre nom complet"
+         aria-describedby="nom-aide" />
+  <span id="nom-aide" class="sr-only">Indiquez votre nom et prénom</span>
+  
+  <!--  champ : Email -->
+  <label for="email">Email</label>
+  <input id="email" 
+         name="email" 
+         type="email" 
+         required 
+         placeholder="votre.email@exemple.com"
+         aria-describedby="email-aide" />
+  <span id="email-aide" class="sr-only">Indiquez votre adresse email</span>
+  
+  <!-- Champs Sujet -->
+  <label for="sujet">Sujet</label>
+<input id="sujet" 
+       name="sujet" 
+       type="text" 
+       required 
+       placeholder="Ex : Proposition d'alternance"
+       aria-describedby="sujet-aide" />
+<span id="sujet-aide" class="sr-only">Indiquez l'objet de votre message</span>
+
+    <!-- Champs Message-->
+<label for="message">Message</label>
+<textarea id="message" 
+          name="message" 
+          rows="6" 
+          required
+          maxlength="280"
+          placeholder="Écrivez votre message ici..."
+          aria-describedby="message-aide help-msg"></textarea>
+<!--Champs Description Message-->
+<span id="message-aide" class="sr-only">Décrivez votre demande en détail</span>
+<p id="help-msg" class="muted">Reste : <span id="restant">280</span> caractères.</p>
+  <button class="btn" type="submit">Envoyer le message</button>
+</form> 
+</section>
+</main>
+    
+<footer role="contentinfo">
+  <small>© <span id="annee"></span> Chrisnaël BERDIER — BUT MMI</small>
+</footer>
+
+<button id="back-to-top" aria-label="Remonter en haut de la page">
+  🚀
+</button>
+
+<script src="app.js" defer></script>
+</body>
+</html>
