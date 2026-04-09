@@ -1,68 +1,76 @@
 /* ============================================
-   CAPRICE DES ÎLES — app.js
-   Fetch le menu.json, rend le menu dynamiquement,
-   gère le toggle FR/EN
+   CAPRICE DES ÎLES — app.js V2
    ============================================ */
 
-// ---- 1. ÉTAT GLOBAL ----
 const state = {
-  menu: null,        // données du JSON une fois chargées
-  lang: 'fr',        // langue active
+  menu: null,
+  lang: 'fr',
 };
 
-// ---- 2. TRADUCTIONS UI (textes hors JSON) ----
+// ---- TRADUCTIONS UI ----
 const uiText = {
   fr: {
     loading: 'Chargement de la carte…',
     error: 'Impossible de charger la carte. Réessayez plus tard.',
     footerTagline: 'Saveurs des Antilles',
+    creditsText: 'Design & développement par',
+    hosting: 'Hébergé sur GitHub Pages',
+    legalLink: 'Mentions légales',
     htmlLang: 'fr',
   },
   en: {
     loading: 'Loading menu…',
     error: 'Unable to load the menu. Please try again later.',
     footerTagline: 'Caribbean flavors',
+    creditsText: 'Designed & developed by',
+    hosting: 'Hosted on GitHub Pages',
+    legalLink: 'Legal notice',
     htmlLang: 'en',
   },
 };
 
-// ---- 3. FETCH DU JSON ----
+// ---- FETCH ----
 async function loadMenu() {
   try {
     const response = await fetch('./data/menu.json');
     if (!response.ok) throw new Error('Fetch failed');
     state.menu = await response.json();
     renderAll();
+    hideLoader();
+    setupObservers();
   } catch (err) {
     console.error(err);
     document.getElementById('loading-state').textContent = uiText[state.lang].error;
+    hideLoader();
   }
 }
 
-// ---- 4. HELPERS ----
+// ---- LOADER ----
+function hideLoader() {
+  const loader = document.getElementById('loader');
+  // Petite attente mini pour éviter un flash
+  setTimeout(() => loader.classList.add('is-hidden'), 400);
+}
 
-// Récupère un texte bilingue depuis un objet { fr, en }
+// ---- HELPERS ----
 function t(obj) {
   if (!obj) return '';
   return obj[state.lang] || obj.fr || '';
 }
 
-// Formate un prix avec le symbole de devise
 function formatPrix(prix) {
   if (prix === null || prix === undefined) return '';
   const symbole = state.menu.restaurant.symbole_devise || '€';
-  // Format français : virgule comme séparateur décimal
   return `${prix.toFixed(2).replace('.', ',')} ${symbole}`;
 }
 
-// Génère le HTML d'un tag (badge)
 function renderTag(tagKey) {
   const def = state.menu.tags_definitions?.[tagKey];
   if (!def) return '';
   return `<span class="tag tag--${tagKey}">${t(def)}</span>`;
 }
 
-// ---- 5. RENDU D'UN PLAT STANDARD ----
+// ---- RENDU PLAT ----
 function renderPlat(plat) {
   const indispo = plat.disponible === false ? 'plat-indispo' : '';
   const tags = (plat.tags || [])
@@ -96,12 +104,11 @@ function renderPlat(plat) {
   `;
 }
 
-// ---- 6. RENDU D'UNE FORMULE (Buffet, Ti Moun) ----
+// ---- FORMULE ----
 function renderFormule(cat) {
   const sousTitre = cat.sous_titre
     ? `<span class="category-subtitle">${t(cat.sous_titre)}</span>`
     : '';
-
   const items = cat.inclus.map(item => `<li>${t(item)}</li>`).join('');
 
   return `
@@ -117,7 +124,7 @@ function renderFormule(cat) {
   `;
 }
 
-// ---- 7. RENDU DES GLACES (grille de parfums) ----
+// ---- GLACES ----
 function renderGlaces(sous) {
   const parfums = sous.parfums.map(p => `<li class="glace-item">${t(p)}</li>`).join('');
   return `
@@ -129,16 +136,14 @@ function renderGlaces(sous) {
   `;
 }
 
-// ---- 8. RENDU D'UNE CATÉGORIE STANDARD ----
+// ---- CATÉGORIE STANDARD ----
 function renderCategorieStandard(cat) {
   const sousTitre = cat.sous_titre
     ? `<span class="category-subtitle">${t(cat.sous_titre)}</span>`
     : '';
-
   const note = cat.note_globale
     ? `<p class="category-note">${t(cat.note_globale)}</p>`
     : '';
-
   const plats = cat.plats.map(renderPlat).join('');
 
   return `
@@ -152,14 +157,10 @@ function renderCategorieStandard(cat) {
   `;
 }
 
-// ---- 9. RENDU D'UN GROUPE (catégorie avec sous-catégories) ----
+// ---- GROUPE ----
 function renderGroupe(cat) {
   const sousCats = cat.sous_categories.map(sous => {
-    // Cas spécial glaces
-    if (sous.type_affichage === 'parfums') {
-      return renderGlaces(sous);
-    }
-    // Sous-catégorie classique
+    if (sous.type_affichage === 'parfums') return renderGlaces(sous);
     const plats = sous.plats.map(renderPlat).join('');
     return `
       <div class="sous-categorie">
@@ -179,68 +180,133 @@ function renderGroupe(cat) {
   `;
 }
 
-// ---- 10. DISPATCHER DE RENDU ----
 function renderCategorie(cat) {
   switch (cat.type) {
     case 'formule': return renderFormule(cat);
     case 'groupe': return renderGroupe(cat);
-    case 'standard':
     default: return renderCategorieStandard(cat);
   }
 }
 
-// ---- 11. RENDU DE LA NAV CATÉGORIES ----
+// ---- NAV ----
 function renderNav() {
   const navList = document.getElementById('category-nav-list');
   navList.innerHTML = state.menu.categories
-    .map(cat => `<li><a href="#cat-${cat.id}">${t(cat.nom)}</a></li>`)
+    .map(cat => `<li><a href="#cat-${cat.id}" data-cat-id="${cat.id}">${t(cat.nom)}</a></li>`)
     .join('');
 }
 
-// ---- 12. RENDU COMPLET ----
+// ---- FOOTER I18N ----
+function updateFooterI18n() {
+  const texts = uiText[state.lang];
+  const set = (selector, value) => {
+    const el = document.querySelector(selector);
+    if (el) el.textContent = value;
+  };
+  set('[data-i18n="footer-tagline"]', texts.footerTagline);
+  set('[data-i18n="credits-text"]', texts.creditsText);
+  set('[data-i18n="hosting"]', texts.hosting);
+  set('[data-i18n="legal-link"]', texts.legalLink);
+}
+
+// ---- RENDU COMPLET ----
 function renderAll() {
   if (!state.menu) return;
 
-  // Met à jour l'attribut lang du <html>
   document.documentElement.lang = uiText[state.lang].htmlLang;
 
-  // Nav
   renderNav();
-
-  // Menu principal
   const container = document.getElementById('menu-container');
   container.innerHTML = state.menu.categories.map(renderCategorie).join('');
-
-  // Footer tagline
-  const tagline = document.querySelector('[data-i18n="footer-tagline"]');
-  if (tagline) tagline.textContent = uiText[state.lang].footerTagline;
+  updateFooterI18n();
 }
 
-// ---- 13. TOGGLE LANGUE ----
+// ---- OBSERVERS ----
+function setupObservers() {
+  // 1. Révélation des catégories au scroll
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        revealObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -80px 0px' });
+
+  document.querySelectorAll('.category').forEach(cat => revealObs.observe(cat));
+
+  // 2. Highlight nav active selon la catégorie visible
+  const navLinks = document.querySelectorAll('.category-nav a');
+  const activeObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id.replace('cat-', '');
+        navLinks.forEach(link => {
+          const isActive = link.dataset.catId === id;
+          link.classList.toggle('active', isActive);
+          // Auto-scroll de la nav pour garder l'item actif visible (mobile)
+          if (isActive) {
+            link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          }
+        });
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+
+  document.querySelectorAll('.category').forEach(cat => activeObs.observe(cat));
+}
+
+// ---- TOGGLE LANGUE ----
 function setupLangToggle() {
   const buttons = document.querySelectorAll('.lang-btn');
   buttons.forEach(btn => {
     btn.addEventListener('click', () => {
       const newLang = btn.dataset.lang;
       if (newLang === state.lang) return;
-
       state.lang = newLang;
-
-      // Mise à jour visuelle des boutons
       buttons.forEach(b => {
         const active = b.dataset.lang === newLang;
         b.classList.toggle('active', active);
         b.setAttribute('aria-pressed', active);
       });
-
-      // Re-rendu
       renderAll();
+      // Re-déclencher les animations de révélation puisque le DOM est recréé
+      setupObservers();
+      // Les catégories déjà visibles doivent apparaître immédiatement
+      requestAnimationFrame(() => {
+        document.querySelectorAll('.category').forEach(cat => {
+          const rect = cat.getBoundingClientRect();
+          if (rect.top < window.innerHeight && rect.bottom > 0) {
+            cat.classList.add('is-visible');
+          }
+        });
+      });
     });
   });
 }
 
-// ---- 14. INIT ----
+// ---- BACK TO TOP ----
+function setupBackToTop() {
+  const btn = document.getElementById('back-to-top');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('is-visible', window.scrollY > 600);
+  }, { passive: true });
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+// ---- ANNÉE COURANTE ----
+function setCurrentYear() {
+  const yearEl = document.getElementById('current-year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+}
+
+// ---- INIT ----
 document.addEventListener('DOMContentLoaded', () => {
+  setCurrentYear();
   setupLangToggle();
+  setupBackToTop();
   loadMenu();
 });
