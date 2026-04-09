@@ -1,5 +1,5 @@
 /* ============================================
-   CAPRICE DES ÎLES — app.js V2
+   CAPRICE DES ÎLES — app.js V3
    ============================================ */
 
 const state = {
@@ -7,25 +7,91 @@ const state = {
   lang: 'fr',
 };
 
+// Temps minimum d'affichage du loader (ms)
+const LOADER_MIN_DURATION = 1400;
+const LOADER_START = performance.now();
+
 // ---- TRADUCTIONS UI ----
 const uiText = {
   fr: {
     loading: 'Chargement de la carte…',
     error: 'Impossible de charger la carte. Réessayez plus tard.',
+    heroWelcome: 'Bienvenue au',
+    heroTagline: 'Saveurs authentiques des Antilles',
+    reservationLabel: 'Réservation :',
+    scrollMenu: 'Découvrir la carte',
     footerTagline: 'Saveurs des Antilles',
+    footerContactHeading: 'Nous trouver',
     creditsText: 'Design & développement par',
-    hosting: 'Hébergé sur GitHub Pages',
     legalLink: 'Mentions légales',
     htmlLang: 'fr',
+    legalTitle: 'Mentions légales',
+    legalContent: `
+      <h3>Éditeur du site</h3>
+      <p>Restaurant <strong>Caprice des Îles</strong><br>
+      Av. du Père Labat, Baillif 97123, Guadeloupe<br>
+      Téléphone : +590 590 81 74 97</p>
+
+      <h3>Conception &amp; développement</h3>
+      <p>Ce site a été conçu et développé par <strong>Chrisnaël Berdier</strong>,
+      étudiant en BUT MMI — Parcours Création Numérique à l'IUT de Guadeloupe.</p>
+      <p>
+        <a href="https://yui971.github.io/portfolio-berdier-chrisnael/" target="_blank" rel="noopener">Portfolio</a> ·
+        <a href="https://www.linkedin.com/in/chrisna%C3%ABl-berdier-b634a3389/" target="_blank" rel="noopener">LinkedIn</a>
+      </p>
+
+      <h3>Hébergement</h3>
+      <p>Ce site est hébergé par <strong>GitHub Pages</strong> — GitHub Inc.,
+      88 Colin P Kelly Jr St, San Francisco, CA 94107, États-Unis.</p>
+
+      <h3>Propriété intellectuelle</h3>
+      <p>L'ensemble des contenus (textes, photos, logo, mise en forme) présents sur ce site
+      est la propriété du restaurant Caprice des Îles, sauf mention contraire. Toute reproduction
+      sans autorisation préalable est interdite.</p>
+
+      <h3>Données personnelles</h3>
+      <p>Ce site ne collecte aucune donnée personnelle et n'utilise aucun cookie de suivi.</p>
+    `,
   },
   en: {
     loading: 'Loading menu…',
     error: 'Unable to load the menu. Please try again later.',
+    heroWelcome: 'Welcome to',
+    heroTagline: 'Authentic Caribbean flavors',
+    reservationLabel: 'Reservations:',
+    scrollMenu: 'Discover the menu',
     footerTagline: 'Caribbean flavors',
+    footerContactHeading: 'Find us',
     creditsText: 'Designed & developed by',
-    hosting: 'Hosted on GitHub Pages',
     legalLink: 'Legal notice',
     htmlLang: 'en',
+    legalTitle: 'Legal Notice',
+    legalContent: `
+      <h3>Publisher</h3>
+      <p><strong>Caprice des Îles</strong> Restaurant<br>
+      Av. du Père Labat, Baillif 97123, Guadeloupe<br>
+      Phone: +590 590 81 74 97</p>
+
+      <h3>Design &amp; Development</h3>
+      <p>This website was designed and developed by <strong>Chrisnaël Berdier</strong>,
+      a Multimedia &amp; Internet student at IUT de Guadeloupe.</p>
+      <p>
+        <a href="https://yui971.github.io/portfolio-berdier-chrisnael/" target="_blank" rel="noopener">Portfolio</a> ·
+        <a href="https://www.linkedin.com/in/chrisna%C3%ABl-berdier-b634a3389/" target="_blank" rel="noopener">LinkedIn</a>
+      </p>
+
+      <h3>Hosting</h3>
+      <p>This site is hosted by <strong>GitHub Pages</strong> — GitHub Inc.,
+      88 Colin P Kelly Jr St, San Francisco, CA 94107, USA.</p>
+
+      <h3>Intellectual property</h3>
+      <p>All content (text, photos, logo, layout) on this site is the property of
+      Caprice des Îles restaurant unless otherwise stated. Any unauthorized reproduction
+      is prohibited.</p>
+
+      <h3>Personal data</h3>
+      <p>This site does not collect any personal data and does not use tracking cookies.</p>
+    `,
   },
 };
 
@@ -36,20 +102,22 @@ async function loadMenu() {
     if (!response.ok) throw new Error('Fetch failed');
     state.menu = await response.json();
     renderAll();
-    hideLoader();
+    hideLoaderWithMinDelay();
     setupObservers();
   } catch (err) {
     console.error(err);
     document.getElementById('loading-state').textContent = uiText[state.lang].error;
-    hideLoader();
+    hideLoaderWithMinDelay();
   }
 }
 
 // ---- LOADER ----
-function hideLoader() {
-  const loader = document.getElementById('loader');
-  // Petite attente mini pour éviter un flash
-  setTimeout(() => loader.classList.add('is-hidden'), 400);
+function hideLoaderWithMinDelay() {
+  const elapsed = performance.now() - LOADER_START;
+  const remaining = Math.max(0, LOADER_MIN_DURATION - elapsed);
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('is-hidden');
+  }, remaining);
 }
 
 // ---- HELPERS ----
@@ -70,7 +138,7 @@ function renderTag(tagKey) {
   return `<span class="tag tag--${tagKey}">${t(def)}</span>`;
 }
 
-// ---- RENDU PLAT ----
+// ---- RENDUS ----
 function renderPlat(plat) {
   const indispo = plat.disponible === false ? 'plat-indispo' : '';
   const tags = (plat.tags || [])
@@ -104,13 +172,9 @@ function renderPlat(plat) {
   `;
 }
 
-// ---- FORMULE ----
 function renderFormule(cat) {
-  const sousTitre = cat.sous_titre
-    ? `<span class="category-subtitle">${t(cat.sous_titre)}</span>`
-    : '';
+  const sousTitre = cat.sous_titre ? `<span class="category-subtitle">${t(cat.sous_titre)}</span>` : '';
   const items = cat.inclus.map(item => `<li>${t(item)}</li>`).join('');
-
   return `
     <section class="category" id="cat-${cat.id}">
       <div class="category-header">
@@ -124,7 +188,6 @@ function renderFormule(cat) {
   `;
 }
 
-// ---- GLACES ----
 function renderGlaces(sous) {
   const parfums = sous.parfums.map(p => `<li class="glace-item">${t(p)}</li>`).join('');
   return `
@@ -136,16 +199,10 @@ function renderGlaces(sous) {
   `;
 }
 
-// ---- CATÉGORIE STANDARD ----
 function renderCategorieStandard(cat) {
-  const sousTitre = cat.sous_titre
-    ? `<span class="category-subtitle">${t(cat.sous_titre)}</span>`
-    : '';
-  const note = cat.note_globale
-    ? `<p class="category-note">${t(cat.note_globale)}</p>`
-    : '';
+  const sousTitre = cat.sous_titre ? `<span class="category-subtitle">${t(cat.sous_titre)}</span>` : '';
+  const note = cat.note_globale ? `<p class="category-note">${t(cat.note_globale)}</p>` : '';
   const plats = cat.plats.map(renderPlat).join('');
-
   return `
     <section class="category" id="cat-${cat.id}">
       <div class="category-header">
@@ -157,7 +214,6 @@ function renderCategorieStandard(cat) {
   `;
 }
 
-// ---- GROUPE ----
 function renderGroupe(cat) {
   const sousCats = cat.sous_categories.map(sous => {
     if (sous.type_affichage === 'parfums') return renderGlaces(sous);
@@ -169,7 +225,6 @@ function renderGroupe(cat) {
       </div>
     `;
   }).join('');
-
   return `
     <section class="category" id="cat-${cat.id}">
       <div class="category-header">
@@ -196,59 +251,87 @@ function renderNav() {
     .join('');
 }
 
-// ---- FOOTER I18N ----
-function updateFooterI18n() {
+// Centrage HORIZONTAL du lien actif dans la nav (ne touche JAMAIS au scroll de la page)
+function centerNavLink(link) {
+  const navContainer = document.querySelector('.category-nav ul');
+  if (!navContainer || !link) return;
+
+  const containerRect = navContainer.getBoundingClientRect();
+  const linkRect = link.getBoundingClientRect();
+
+  // Décalage horizontal entre le centre du lien et le centre du conteneur
+  const linkCenter = linkRect.left + linkRect.width / 2;
+  const containerCenter = containerRect.left + containerRect.width / 2;
+  const delta = linkCenter - containerCenter;
+
+  if (Math.abs(delta) < 5) return; // déjà centré, pas besoin
+
+  navContainer.scrollBy({ left: delta, behavior: 'smooth' });
+}
+
+// ---- I18N UI ----
+function updateUIText() {
   const texts = uiText[state.lang];
   const set = (selector, value) => {
     const el = document.querySelector(selector);
     if (el) el.textContent = value;
   };
+
+  set('[data-i18n="hero-welcome"]', texts.heroWelcome);
+  set('[data-i18n="hero-tagline"]', texts.heroTagline);
+  set('[data-i18n="reservation-label"]', texts.reservationLabel);
+  set('[data-i18n="scroll-menu"]', texts.scrollMenu);
   set('[data-i18n="footer-tagline"]', texts.footerTagline);
+  set('[data-i18n="footer-contact-heading"]', texts.footerContactHeading);
   set('[data-i18n="credits-text"]', texts.creditsText);
-  set('[data-i18n="hosting"]', texts.hosting);
   set('[data-i18n="legal-link"]', texts.legalLink);
 }
 
 // ---- RENDU COMPLET ----
 function renderAll() {
   if (!state.menu) return;
-
   document.documentElement.lang = uiText[state.lang].htmlLang;
 
   renderNav();
   const container = document.getElementById('menu-container');
   container.innerHTML = state.menu.categories.map(renderCategorie).join('');
-  updateFooterI18n();
+  updateUIText();
 }
 
 // ---- OBSERVERS ----
+let activeObs = null;
+let revealObs = null;
+
 function setupObservers() {
+  // Nettoie les anciens observers
+  if (activeObs) activeObs.disconnect();
+  if (revealObs) revealObs.disconnect();
+
   // 1. Révélation des catégories au scroll
-  const revealObs = new IntersectionObserver((entries) => {
+  revealObs = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('is-visible');
         revealObs.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.15, rootMargin: '0px 0px -80px 0px' });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
 
   document.querySelectorAll('.category').forEach(cat => revealObs.observe(cat));
 
   // 2. Highlight nav active selon la catégorie visible
   const navLinks = document.querySelectorAll('.category-nav a');
-  const activeObs = new IntersectionObserver((entries) => {
+  activeObs = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const id = entry.target.id.replace('cat-', '');
+        let activeLink = null;
         navLinks.forEach(link => {
           const isActive = link.dataset.catId === id;
           link.classList.toggle('active', isActive);
-          // Auto-scroll de la nav pour garder l'item actif visible (mobile)
-          if (isActive) {
-            link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-          }
+          if (isActive) activeLink = link;
         });
+        if (activeLink) centerNavLink(activeLink);
       }
     });
   }, { rootMargin: '-40% 0px -55% 0px' });
@@ -264,15 +347,17 @@ function setupLangToggle() {
       const newLang = btn.dataset.lang;
       if (newLang === state.lang) return;
       state.lang = newLang;
+
       buttons.forEach(b => {
         const active = b.dataset.lang === newLang;
         b.classList.toggle('active', active);
         b.setAttribute('aria-pressed', active);
       });
+
       renderAll();
-      // Re-déclencher les animations de révélation puisque le DOM est recréé
       setupObservers();
-      // Les catégories déjà visibles doivent apparaître immédiatement
+
+      // Les catégories déjà visibles à l'écran doivent apparaître immédiatement
       requestAnimationFrame(() => {
         document.querySelectorAll('.category').forEach(cat => {
           const rect = cat.getBoundingClientRect();
@@ -291,9 +376,49 @@ function setupBackToTop() {
   window.addEventListener('scroll', () => {
     btn.classList.toggle('is-visible', window.scrollY > 600);
   }, { passive: true });
-
   btn.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+// ---- MODAL MENTIONS LÉGALES ----
+function setupLegalModal() {
+  const modal = document.getElementById('legal-modal');
+  const openBtn = document.getElementById('open-legal');
+  const closeBtns = modal.querySelectorAll('[data-close-modal]');
+  const body = document.getElementById('legal-modal-body');
+  const title = document.getElementById('legal-modal-title');
+  let lastFocused = null;
+
+  function openModal() {
+    lastFocused = document.activeElement;
+    // Injecte le contenu selon la langue
+    body.innerHTML = uiText[state.lang].legalContent;
+    title.textContent = uiText[state.lang].legalTitle;
+
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+
+    // Focus sur le bouton de fermeture
+    setTimeout(() => modal.querySelector('.modal-close').focus(), 100);
+  }
+
+  function closeModal() {
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+    if (lastFocused) lastFocused.focus();
+  }
+
+  openBtn.addEventListener('click', openModal);
+  closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
+
+  // Fermeture avec ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+      closeModal();
+    }
   });
 }
 
@@ -308,5 +433,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setCurrentYear();
   setupLangToggle();
   setupBackToTop();
+  setupLegalModal();
   loadMenu();
 });
