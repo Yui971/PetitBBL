@@ -1,41 +1,47 @@
 /* ============================================
-   CAPRICE DES ÎLES — Menu digital
-   Direction : Tropical Editorial
-   Mobile-first, accessible (WCAG AA visé)
+   CAPRICE DES ÎLES — V2
+   Tropical Editorial • Mobile-first • WCAG AA
    ============================================ */
 
 /* ---- 1. VARIABLES ---- */
 :root {
-  /* Palette extraite du logo */
+  /* Palette */
   --turquoise: #3FC5D4;
   --turquoise-soft: #A8E4EA;
   --jaune-sable: #F5D547;
   --rouge-caprice: #C8102E;
+  --rouge-dark: #9B0C24;
   --or-etoile: #E8B830;
-  --or-clair: #F0D678;
+  --or-dark: #A8841F;       /* version assombrie pour textes (contraste WCAG AA sur crème) */
   --vert-palme: #2D6B3F;
+  --vert-palme-soft: rgba(45, 107, 63, 0.12);
   --bleu-verre: #1B4F8C;
 
-  /* Fonds et textes */
+  /* Fonds / textes */
   --creme: #FBF6E9;
   --creme-soft: #FFFDF5;
+  --creme-warm: #F5EEDC;
   --noir-texte: #1A1A1A;
-  --gris-texte: #5A5A5A;
-  --gris-ligne: #E8E1C9;
+  --gris-texte: #555555;    /* contraste AA sur crème */
+  --gris-ligne: #E0D9C1;
 
   /* Typo */
   --font-titre: 'Playfair Display', Georgia, serif;
   --font-corps: 'Outfit', -apple-system, sans-serif;
 
-  /* Espacements (échelle modulaire) */
+  /* Spacings */
   --space-xs: 0.5rem;
   --space-sm: 1rem;
   --space-md: 1.5rem;
   --space-lg: 2.5rem;
   --space-xl: 4rem;
 
-  /* Transitions */
+  /* Hauteurs éléments fixes */
+  --header-h: 96px;
+  --nav-h: 56px;
+
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ---- 2. RESET ---- */
@@ -47,7 +53,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 120px; /* compense le header sticky */
+  scroll-padding-top: calc(var(--header-h) + var(--nav-h) + 20px);
 }
 
 body {
@@ -57,68 +63,188 @@ body {
   color: var(--noir-texte);
   background: var(--creme);
   -webkit-font-smoothing: antialiased;
-
-  /* Texture de fond subtile : grain léger crème */
-  background-image:
-    radial-gradient(circle at 20% 10%, rgba(63, 197, 212, 0.04) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(245, 213, 71, 0.05) 0%, transparent 50%);
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100vh;
 }
 
-img {
-  max-width: 100%;
-  display: block;
+/* Texture de fond subtile */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 15% 15%, rgba(63, 197, 212, 0.05) 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(245, 213, 71, 0.06) 0%, transparent 45%);
+  z-index: 0;
 }
 
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  background: none;
-}
+img { max-width: 100%; display: block; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+ul { list-style: none; }
+a { color: inherit; text-decoration: none; }
 
-ul {
-  list-style: none;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-/* Focus accessible (WCAG) */
+/* Focus accessible WCAG */
 :focus-visible {
-  outline: 2px solid var(--or-etoile);
+  outline: 2.5px solid var(--or-dark);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
-/* ---- 3. HEADER ---- */
+/* ---- 3. LOADER ---- */
+.loader {
+  position: fixed;
+  inset: 0;
+  background: var(--creme);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s var(--ease), visibility 0.6s var(--ease);
+}
+
+.loader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-inner {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  animation: logoPulse 1.8s var(--ease) infinite;
+}
+
+.loader-ring {
+  position: absolute;
+  inset: 0;
+  border: 2px solid transparent;
+  border-top-color: var(--or-etoile);
+  border-right-color: var(--or-etoile);
+  border-radius: 50%;
+  animation: loaderSpin 1.2s linear infinite;
+}
+
+@keyframes logoPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.92); opacity: 0.7; }
+}
+
+@keyframes loaderSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---- 4. FEUILLES DÉCORATIVES (background fixe) ---- */
+.decor-leaves {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  color: var(--vert-palme);
+  opacity: 0.13;
+}
+
+.leaf {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  animation: leafSway 8s ease-in-out infinite;
+}
+
+.leaf--top-left {
+  top: -40px;
+  left: -60px;
+  transform-origin: top left;
+}
+
+.leaf--bottom-right {
+  bottom: -40px;
+  right: -60px;
+  transform-origin: bottom right;
+  animation-delay: -4s;
+}
+
+.leaf--mid-right {
+  top: 40%;
+  right: -120px;
+  width: 220px;
+  height: 220px;
+  opacity: 0.6;
+  transform-origin: top right;
+  animation-delay: -2s;
+}
+
+@keyframes leafSway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(2.5deg); }
+}
+
+/* Au dessus de 900px on les agrandit */
+@media (min-width: 900px) {
+  .leaf { width: 380px; height: 380px; }
+  .leaf--mid-right { width: 300px; height: 300px; }
+  .decor-leaves { opacity: 0.15; }
+}
+
+/* ---- 5. HEADER ---- */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--creme-soft);
+  background: rgba(251, 246, 233, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--gris-ligne);
-  backdrop-filter: blur(8px);
+  min-height: var(--header-h);
+  display: flex;
+  align-items: center;
 }
 
 .header-inner {
-  max-width: 900px;
+  width: 100%;
+  max-width: 960px;
   margin: 0 auto;
   padding: var(--space-sm) var(--space-md);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-sm);
+  gap: var(--space-md);
 }
 
-.logo-wrap {
-  flex-shrink: 0;
+.logo-link {
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s var(--ease);
+  border-radius: 4px;
+}
+
+.logo-link:hover {
+  transform: scale(1.04);
+}
+
+.logo-link:active {
+  transform: scale(0.98);
 }
 
 .logo {
-  height: 56px;
+  height: 80px;
   width: auto;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+}
+
+@media (min-width: 700px) {
+  .logo { height: 96px; }
+  :root { --header-h: 112px; }
 }
 
 /* Toggle langue */
@@ -127,16 +253,19 @@ a {
   align-items: center;
   gap: var(--space-xs);
   font-family: var(--font-titre);
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   letter-spacing: 0.1em;
+  flex-shrink: 0;
 }
 
 .lang-btn {
-  padding: 0.35rem 0.6rem;
+  padding: 0.4rem 0.7rem;
   color: var(--gris-texte);
   font-weight: 400;
-  transition: color 0.2s var(--ease);
-  border-bottom: 1.5px solid transparent;
+  transition: color 0.25s var(--ease);
+  border-bottom: 2px solid transparent;
+  min-height: 44px; /* target tactile WCAG */
+  min-width: 44px;
 }
 
 .lang-btn.active {
@@ -151,49 +280,92 @@ a {
 
 .lang-sep {
   color: var(--gris-ligne);
+  font-size: 1.2rem;
 }
 
-/* ---- 4. NAV CATÉGORIES (scroll horizontal mobile) ---- */
+/* ---- 6. NAV CATÉGORIES ---- */
 .category-nav {
   position: sticky;
-  top: 88px;
+  top: var(--header-h);
   z-index: 90;
-  background: var(--creme-soft);
+  background: rgba(255, 253, 245, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--gris-ligne);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  min-height: var(--nav-h);
 }
 
-.category-nav::-webkit-scrollbar { display: none; }
+.category-nav-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dégradé de fondu sur les côtés pour indiquer le scroll */
+.category-nav-inner::before,
+.category-nav-inner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+  pointer-events: none;
+  z-index: 2;
+}
+.category-nav-inner::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--creme-soft), transparent);
+}
+.category-nav-inner::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--creme-soft), transparent);
+}
 
 .category-nav ul {
   display: flex;
   gap: var(--space-md);
   padding: var(--space-sm) var(--space-md);
-  max-width: 900px;
-  margin: 0 auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
   white-space: nowrap;
 }
 
+.category-nav ul::-webkit-scrollbar { display: none; }
+
 .category-nav a {
+  display: inline-block;
   font-family: var(--font-titre);
   font-style: italic;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   color: var(--gris-texte);
-  padding: 0.25rem 0;
-  border-bottom: 1.5px solid transparent;
-  transition: all 0.2s var(--ease);
+  padding: 0.35rem 0.2rem;
+  border-bottom: 2px solid transparent;
+  transition: all 0.25s var(--ease);
+  position: relative;
 }
 
-.category-nav a:hover,
-.category-nav a.active {
+.category-nav a:hover {
   color: var(--noir-texte);
+}
+
+.category-nav a.active {
+  color: var(--rouge-caprice);
   border-bottom-color: var(--or-etoile);
 }
 
-/* ---- 5. MAIN CONTAINER ---- */
+@media (min-width: 700px) {
+  .category-nav a { font-size: 1.2rem; }
+  .category-nav ul { gap: var(--space-lg); justify-content: center; flex-wrap: wrap; white-space: normal; }
+  .category-nav-inner::before,
+  .category-nav-inner::after { display: none; }
+}
+
+/* ---- 7. MAIN ---- */
 .menu-container {
+  position: relative;
+  z-index: 1;
   max-width: 900px;
   margin: 0 auto;
   padding: var(--space-lg) var(--space-md) var(--space-xl);
@@ -206,36 +378,34 @@ a {
   font-style: italic;
 }
 
-/* ---- 6. CATÉGORIE (section) ---- */
+/* ---- 8. CATÉGORIE ---- */
 .category {
   margin-bottom: var(--space-xl);
-  scroll-margin-top: 140px;
+  scroll-margin-top: calc(var(--header-h) + var(--nav-h) + 20px);
 }
 
 .category-header {
   text-align: center;
   margin-bottom: var(--space-lg);
-  position: relative;
 }
 
 .category-title {
   font-family: var(--font-titre);
   font-style: italic;
   font-weight: 400;
-  font-size: clamp(2rem, 6vw, 2.75rem);
+  font-size: clamp(2.2rem, 6vw, 3rem);
   color: var(--noir-texte);
   display: inline-block;
-  padding: 0 var(--space-md);
+  padding: 0 var(--space-lg);
   position: relative;
 }
 
-/* Bandeau doré décoratif (clin d'œil à la carte papier) */
 .category-title::before,
 .category-title::after {
   content: '';
   position: absolute;
-  top: 50%;
-  width: 40px;
+  top: 55%;
+  width: 50px;
   height: 1.5px;
   background: linear-gradient(90deg, transparent, var(--or-etoile), transparent);
 }
@@ -248,23 +418,23 @@ a {
   margin-top: var(--space-xs);
   font-family: var(--font-corps);
   font-style: normal;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--or-etoile);
+  letter-spacing: 0.18em;
+  color: var(--or-dark);
 }
 
 .category-note {
   max-width: 600px;
   margin: var(--space-md) auto 0;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-style: italic;
   color: var(--gris-texte);
   text-align: center;
 }
 
-/* ---- 7. LISTE DES PLATS ---- */
+/* ---- 9. PLATS ---- */
 .plats-list {
   display: flex;
   flex-direction: column;
@@ -278,23 +448,24 @@ a {
   align-items: baseline;
   padding-bottom: var(--space-sm);
   border-bottom: 1px dashed var(--gris-ligne);
+  transition: transform 0.3s var(--ease), padding-left 0.3s var(--ease);
 }
 
-.plat:last-child {
-  border-bottom: none;
+.plat:last-child { border-bottom: none; }
+
+.plat:hover {
+  transform: translateX(4px);
 }
 
 .plat-indispo {
-  opacity: 0.4;
+  opacity: 0.45;
 }
 
-.plat-info {
-  min-width: 0;
-}
+.plat-info { min-width: 0; }
 
 .plat-nom {
   font-family: var(--font-titre);
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 600;
   color: var(--noir-texte);
   line-height: 1.3;
@@ -305,25 +476,30 @@ a {
 }
 
 .plat-description {
-  margin-top: 0.2rem;
-  font-size: 0.9rem;
+  margin-top: 0.25rem;
+  font-size: 0.92rem;
   font-style: italic;
   color: var(--gris-texte);
 }
 
 .plat-prix {
   font-family: var(--font-titre);
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 600;
   color: var(--rouge-caprice);
   white-space: nowrap;
   padding-left: var(--space-sm);
+  transition: transform 0.3s var(--ease);
+}
+
+.plat:hover .plat-prix {
+  transform: scale(1.08);
 }
 
 .plat-prix-note {
   display: block;
   font-family: var(--font-corps);
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 400;
   color: var(--gris-texte);
   font-style: italic;
@@ -341,27 +517,33 @@ a {
 .tag {
   display: inline-block;
   font-family: var(--font-corps);
-  font-size: 0.65rem;
-  font-weight: 500;
+  font-size: 0.68rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  padding: 0.15rem 0.5rem;
+  padding: 0.2rem 0.55rem;
   border-radius: 999px;
-  border: 1px solid var(--or-etoile);
-  color: var(--or-etoile);
+  border: 1px solid var(--or-dark);
+  color: var(--or-dark);
   background: transparent;
 }
 
 .tag--signature {
-  background: var(--or-etoile);
+  background: var(--or-dark);
   color: var(--creme);
-  border-color: var(--or-etoile);
+  border-color: var(--or-dark);
 }
 
 .tag--plat-du-jour {
   background: var(--rouge-caprice);
   color: var(--creme);
   border-color: var(--rouge-caprice);
+  animation: tagPulse 2s ease-in-out infinite;
+}
+
+@keyframes tagPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(200, 16, 46, 0); }
 }
 
 .tag--rupture {
@@ -369,13 +551,20 @@ a {
   color: var(--gris-texte);
 }
 
-/* ---- 8. FORMULES (Buffet, Ti Moun) ---- */
+/* ---- 10. FORMULES ---- */
 .formule {
   background: var(--creme-soft);
   border: 1px solid var(--gris-ligne);
-  border-left: 3px solid var(--or-etoile);
-  padding: var(--space-md);
-  border-radius: 2px;
+  border-left: 4px solid var(--or-etoile);
+  padding: var(--space-lg) var(--space-md);
+  border-radius: 3px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+}
+
+.formule:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
 
 .formule-list {
@@ -383,24 +572,26 @@ a {
 }
 
 .formule-list li {
-  padding: 0.4rem 0;
-  padding-left: 1.2rem;
+  padding: 0.55rem 0;
+  padding-left: 1.5rem;
   position: relative;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
+  line-height: 1.5;
 }
 
 .formule-list li::before {
   content: '➤';
   position: absolute;
   left: 0;
+  top: 0.7rem;
   color: var(--or-etoile);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .formule-prix {
   text-align: right;
   font-family: var(--font-titre);
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--rouge-caprice);
   margin-top: var(--space-sm);
@@ -408,29 +599,29 @@ a {
   border-top: 1px solid var(--gris-ligne);
 }
 
-/* ---- 9. GROUPE (catégorie avec sous-catégories) ---- */
+/* ---- 11. SOUS-CATÉGORIES ---- */
 .sous-categorie {
   margin-top: var(--space-lg);
 }
 
-.sous-categorie:first-child {
-  margin-top: 0;
-}
+.sous-categorie:first-child { margin-top: 0; }
 
 .sous-categorie-title {
   font-family: var(--font-titre);
   font-style: italic;
-  font-size: 1.35rem;
-  color: var(--or-etoile);
+  font-size: 1.5rem;
+  color: var(--or-dark);
   text-align: center;
   margin-bottom: var(--space-md);
+  position: relative;
 }
 
-/* ---- 10. GLACES (grille de parfums) ---- */
+/* ---- 12. GLACES ---- */
 .glaces-prix-info {
   text-align: center;
   font-family: var(--font-titre);
   font-style: italic;
+  font-size: 1.1rem;
   color: var(--rouge-caprice);
   margin-bottom: var(--space-md);
 }
@@ -439,82 +630,181 @@ a {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-sm) var(--space-md);
-  max-width: 500px;
+  max-width: 550px;
   margin: 0 auto;
 }
 
 .glace-item {
-  padding: 0.4rem 0;
-  padding-left: 1.2rem;
+  padding: 0.45rem 0;
+  padding-left: 1.5rem;
   position: relative;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
+  transition: transform 0.25s var(--ease), color 0.25s var(--ease);
 }
 
 .glace-item::before {
   content: '➤';
   position: absolute;
   left: 0;
+  top: 0.55rem;
   color: var(--or-etoile);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
 }
 
-/* ---- 11. FOOTER ---- */
+.glace-item:hover {
+  color: var(--rouge-caprice);
+  transform: translateX(3px);
+}
+
+/* ---- 13. FOOTER ---- */
 .site-footer {
+  position: relative;
+  z-index: 1;
   text-align: center;
   padding: var(--space-lg) var(--space-md);
   background: var(--creme-soft);
   border-top: 1px solid var(--gris-ligne);
+  margin-top: var(--space-xl);
+}
+
+.footer-main {
+  margin-bottom: var(--space-md);
 }
 
 .footer-name {
   font-family: var(--font-titre);
   font-style: italic;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   color: var(--rouge-caprice);
 }
 
 .footer-tagline {
   margin-top: var(--space-xs);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--gris-texte);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
 }
 
-/* ---- 12. RESPONSIVE ---- */
+.footer-legal {
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--gris-ligne);
+  max-width: 500px;
+  margin: 0 auto;
+  font-size: 0.85rem;
+  color: var(--gris-texte);
+}
+
+.footer-legal p {
+  margin: 0.4rem 0;
+}
+
+.footer-credits a,
+.footer-mentions a {
+  color: var(--rouge-caprice);
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s var(--ease);
+}
+
+.footer-credits a:hover,
+.footer-mentions a:hover {
+  border-bottom-color: var(--rouge-caprice);
+}
+
+/* ---- 14. BACK TO TOP ---- */
+.back-to-top {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--rouge-caprice);
+  color: var(--creme);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(200, 16, 46, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all 0.35s var(--ease);
+  z-index: 80;
+}
+
+.back-to-top svg {
+  width: 22px;
+  height: 22px;
+}
+
+.back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  background: var(--rouge-dark);
+  transform: translateY(-3px);
+}
+
+/* ---- 15. RESPONSIVE ---- */
 @media (min-width: 700px) {
-  .logo { height: 72px; }
-
-  .plats-list {
-    gap: var(--space-lg);
-  }
-
-  .plat-nom { font-size: 1.25rem; }
-  .plat-prix { font-size: 1.2rem; }
-
-  .glaces-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  .plats-list { gap: var(--space-lg); }
+  .plat-nom { font-size: 1.3rem; }
+  .plat-prix { font-size: 1.3rem; }
+  .glaces-grid { grid-template-columns: repeat(3, 1fr); }
+  .formule-list li { font-size: 1.1rem; }
+  .formule-prix { font-size: 2rem; }
 }
 
-/* ---- 13. ANIMATION CHARGEMENT ---- */
+/* ---- 16. ANIMATIONS D'ENTRÉE ---- */
 .category {
-  animation: fadeUp 0.6s var(--ease) both;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
 }
 
-.category:nth-child(2) { animation-delay: 0.05s; }
-.category:nth-child(3) { animation-delay: 0.1s; }
-.category:nth-child(4) { animation-delay: 0.15s; }
-.category:nth-child(5) { animation-delay: 0.2s; }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+.category.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
+.plat,
+.formule-list li,
+.glace-item {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+}
+
+.category.is-visible .plat,
+.category.is-visible .formule-list li,
+.category.is-visible .glace-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger des plats via nth-child */
+.category.is-visible .plat:nth-child(1) { transition-delay: 0.05s; }
+.category.is-visible .plat:nth-child(2) { transition-delay: 0.1s; }
+.category.is-visible .plat:nth-child(3) { transition-delay: 0.15s; }
+.category.is-visible .plat:nth-child(4) { transition-delay: 0.2s; }
+.category.is-visible .plat:nth-child(5) { transition-delay: 0.25s; }
+.category.is-visible .plat:nth-child(6) { transition-delay: 0.3s; }
+.category.is-visible .plat:nth-child(7) { transition-delay: 0.35s; }
+
+/* ---- 17. REDUCED MOTION ---- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .category, .plat, .formule-list li, .glace-item {
+    opacity: 1;
+    transform: none;
   }
 }
