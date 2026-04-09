@@ -1,0 +1,486 @@
+{
+  "restaurant": {
+    "nom": "Caprice des Îles",
+    "logo": "img/logo.png",
+    "langues_disponibles": ["fr", "en"],
+    "devise": "EUR",
+    "symbole_devise": "€"
+  },
+  "categories": [
+    {
+      "id": "buffet-aperitif",
+      "type": "formule",
+      "nom": { "fr": "Buffet apéritif", "en": "Aperitif Buffet" },
+      "prix": 8.00,
+      "inclus": [
+        { "fr": "Jus local", "en": "Local juice" },
+        { "fr": "Sodas", "en": "Sodas" },
+        { "fr": "Rhum blanc", "en": "White rum" },
+        { "fr": "Planteur", "en": "Planter's punch" },
+        { "fr": "Punch maison", "en": "Homemade punch" }
+      ],
+      "disponible": true
+    },
+    {
+      "id": "suggestions-boissons",
+      "type": "groupe",
+      "nom": { "fr": "Nos suggestions", "en": "Our suggestions" },
+      "sous_categories": [
+        {
+          "id": "soft",
+          "nom": { "fr": "Soft", "en": "Soft drinks" },
+          "plats": [
+            {
+              "id": "eau-plate",
+              "nom": { "fr": "Eau plate", "en": "Still water" },
+              "prix": 4.00,
+              "disponible": true,
+              "tags": []
+            },
+            {
+              "id": "eau-gazeuse",
+              "nom": { "fr": "Eau gazeuse", "en": "Sparkling water" },
+              "prix": 4.50,
+              "disponible": true,
+              "tags": []
+            },
+            {
+              "id": "sodas-33cl",
+              "nom": { "fr": "Sodas 33 cl", "en": "Sodas 33 cl" },
+              "prix": 3.50,
+              "disponible": true,
+              "tags": []
+            }
+          ]
+        },
+        {
+          "id": "bieres",
+          "nom": { "fr": "Bières", "en": "Beers" },
+          "plats": [
+            {
+              "id": "heineken-25cl",
+              "nom": { "fr": "Heineken 25 cl", "en": "Heineken 25 cl" },
+              "prix": 4.50,
+              "disponible": true,
+              "tags": []
+            },
+            {
+              "id": "carib",
+              "nom": { "fr": "Carib", "en": "Carib" },
+              "prix": 4.50,
+              "disponible": true,
+              "tags": ["local"]
+            },
+            {
+              "id": "desperados",
+              "nom": { "fr": "Desperados", "en": "Desperados" },
+              "prix": 5.00,
+              "disponible": true,
+              "tags": []
+            }
+          ]
+        },
+        {
+          "id": "rhum",
+          "nom": { "fr": "Rhum", "en": "Rum" },
+          "plats": [
+            {
+              "id": "punch-blanc",
+              "nom": { "fr": "Punch blanc", "en": "White punch" },
+              "prix": 4.50,
+              "disponible": true,
+              "tags": ["local"]
+            },
+            {
+              "id": "punch-vieux",
+              "nom": { "fr": "Punch vieux", "en": "Aged punch" },
+              "prix": 8.00,
+              "disponible": true,
+              "tags": ["local"]
+            },
+            {
+              "id": "rhum-3-ans",
+              "nom": { "fr": "Rhum 3 ans d'âge", "en": "3-year-old rum" },
+              "prix": 16.00,
+              "disponible": true,
+              "tags": ["local", "signature"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cocktails",
+      "type": "groupe",
+      "nom": { "fr": "Nos cocktails", "en": "Our cocktails" },
+      "sous_categories": [
+        {
+          "id": "sans-alcool",
+          "nom": { "fr": "Sans alcool", "en": "Non-alcoholic" },
+          "plats": [
+            {
+              "id": "mocktail-du-jour",
+              "nom": { "fr": "Mocktail du jour", "en": "Mocktail of the day" },
+              "prix": 9.00,
+              "disponible": true,
+              "tags": []
+            },
+            {
+              "id": "virgin-colada",
+              "nom": { "fr": "Virgin colada", "en": "Virgin colada" },
+              "prix": 10.50,
+              "disponible": true,
+              "tags": []
+            },
+            {
+              "id": "virgin-mojito",
+              "nom": { "fr": "Virgin mojito", "en": "Virgin mojito" },
+              "prix": 10.50,
+              "disponible": true,
+              "tags": []
+            }
+          ]
+        },
+        {
+          "id": "avec-alcool",
+          "nom": { "fr": "Avec alcool", "en": "With alcohol" },
+          "plats": [
+            {
+              "id": "tomate",
+              "nom": { "fr": "Tomate", "en": "Tomate" },
+              "description": { "fr": "Ricard, grenadine", "en": "Ricard, grenadine" },
+              "prix": 10.00,
+              "disponible": true,
+              "tags": []
+            },
+            {
+              "id": "pina-colada",
+              "nom": { "fr": "Piña colada", "en": "Piña colada" },
+              "prix": 12.00,
+              "disponible": true,
+              "tags": []
+            },
+            {
+              "id": "mango-colada",
+              "nom": { "fr": "Mango colada", "en": "Mango colada" },
+              "prix": 12.00,
+              "disponible": true,
+              "tags": []
+            },
+            {
+              "id": "mojito",
+              "nom": { "fr": "Mojito", "en": "Mojito" },
+              "description": { "fr": "Passion ou fraise", "en": "Passion fruit or strawberry" },
+              "prix": 12.50,
+              "disponible": true,
+              "tags": []
+            },
+            {
+              "id": "long-island",
+              "nom": { "fr": "Long Island", "en": "Long Island" },
+              "prix": 14.00,
+              "disponible": true,
+              "tags": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menu-ti-moun",
+      "type": "formule",
+      "nom": { "fr": "Menu Ti Moun", "en": "Kids Menu" },
+      "sous_titre": { "fr": "Menu enfant", "en": "Children's menu" },
+      "prix": 18.00,
+      "inclus": [
+        { "fr": "Un jus de fruit", "en": "A fruit juice" },
+        { "fr": "Plat : steak ou poisson", "en": "Main: steak or fish" },
+        { "fr": "Accompagnement : frites ou riz blanc", "en": "Side: fries or white rice" },
+        { "fr": "Dessert : une boule de glace", "en": "Dessert: one scoop of ice cream" }
+      ],
+      "disponible": true
+    },
+    {
+      "id": "entrees",
+      "type": "standard",
+      "nom": { "fr": "Nos entrées", "en": "Starters" },
+      "plats": [
+        {
+          "id": "accras-giraumon",
+          "nom": { "fr": "Accras de giraumon", "en": "Pumpkin fritters" },
+          "prix": 8.50,
+          "disponible": true,
+          "tags": ["local"]
+        },
+        {
+          "id": "accras-morue",
+          "nom": { "fr": "Accras de morue", "en": "Cod fritters" },
+          "prix": 10.00,
+          "disponible": true,
+          "tags": ["local", "signature"]
+        },
+        {
+          "id": "assiette-boudins",
+          "nom": { "fr": "Assiette de boudins", "en": "Creole blood sausage platter" },
+          "prix": 13.50,
+          "disponible": true,
+          "tags": ["local"]
+        },
+        {
+          "id": "balaous-frits",
+          "nom": { "fr": "Balaous frits à l'oignon", "en": "Fried halfbeaks with onions" },
+          "prix": 16.00,
+          "disponible": true,
+          "tags": ["local"]
+        },
+        {
+          "id": "crabe-farci",
+          "nom": { "fr": "Crabe farci", "en": "Stuffed crab" },
+          "prix": 15.00,
+          "disponible": true,
+          "tags": ["local", "signature"]
+        }
+      ]
+    },
+    {
+      "id": "viandes",
+      "type": "standard",
+      "nom": { "fr": "Nos viandes", "en": "Meat dishes" },
+      "note_globale": {
+        "fr": "Sauce au choix : poivre, roquefort ou créole. Supplément sauce : 1,50€",
+        "en": "Choice of sauce: pepper, roquefort or creole. Extra sauce: €1.50"
+      },
+      "plats": [
+        {
+          "id": "colombo-cabri",
+          "nom": { "fr": "Colombo de cabri", "en": "Goat colombo curry" },
+          "prix": 25.00,
+          "disponible": true,
+          "tags": ["local", "signature"]
+        },
+        {
+          "id": "magret-canard",
+          "nom": { "fr": "Magret de canard", "en": "Duck breast" },
+          "prix": 28.00,
+          "disponible": true,
+          "tags": ["sauce"]
+        },
+        {
+          "id": "entrecote-grillee",
+          "nom": { "fr": "Entrecôte grillée", "en": "Grilled ribeye steak" },
+          "description": { "fr": "Origine France", "en": "French origin" },
+          "prix": 29.00,
+          "disponible": true,
+          "tags": ["sauce"]
+        }
+      ]
+    },
+    {
+      "id": "poissons",
+      "type": "standard",
+      "nom": { "fr": "Nos poissons", "en": "Fish & seafood" },
+      "note_globale": {
+        "fr": "Sauce au choix : poivre, roquefort ou créole. Supplément sauce : 1,50€",
+        "en": "Choice of sauce: pepper, roquefort or creole. Extra sauce: €1.50"
+      },
+      "plats": [
+        {
+          "id": "langouste-grillee",
+          "nom": { "fr": "Langouste grillée", "en": "Grilled lobster" },
+          "prix": 12.00,
+          "prix_note": {
+            "fr": "Les 100g, à partir de 500g",
+            "en": "Per 100g, minimum 500g"
+          },
+          "disponible": true,
+          "tags": ["signature"]
+        },
+        {
+          "id": "fricasse-chatrou",
+          "nom": { "fr": "Fricassé de chatrou", "en": "Octopus fricassee" },
+          "prix": 26.00,
+          "disponible": true,
+          "tags": ["local"]
+        },
+        {
+          "id": "daurade-grillee",
+          "nom": { "fr": "Daurade grillée", "en": "Grilled sea bream" },
+          "prix": 26.00,
+          "disponible": false,
+          "tags": ["rupture"]
+        },
+        {
+          "id": "vivaneau-grille",
+          "nom": { "fr": "Vivaneau grillé", "en": "Grilled red snapper" },
+          "prix": 27.00,
+          "disponible": true,
+          "tags": ["local"]
+        },
+        {
+          "id": "fricasse-lambi",
+          "nom": { "fr": "Fricassé de lambi", "en": "Conch fricassee" },
+          "prix": 35.00,
+          "disponible": true,
+          "tags": ["local", "plat-du-jour", "signature"]
+        },
+        {
+          "id": "dombre-crabes",
+          "nom": { "fr": "Dombré et crabes", "en": "Dombré dumplings with crab" },
+          "prix": 28.00,
+          "disponible": true,
+          "tags": ["local", "signature"]
+        }
+      ]
+    },
+    {
+      "id": "accompagnements",
+      "type": "standard",
+      "nom": { "fr": "Nos accompagnements", "en": "Side dishes" },
+      "sous_titre": { "fr": "2 au choix", "en": "Choose 2" },
+      "note_globale": {
+        "fr": "Supplément accompagnement : 3€",
+        "en": "Extra side: €3"
+      },
+      "plats": [
+        {
+          "id": "crudites",
+          "nom": { "fr": "Crudités", "en": "Raw vegetables" },
+          "prix": null,
+          "disponible": true,
+          "tags": []
+        },
+        {
+          "id": "frites-tradition",
+          "nom": { "fr": "Frites tradition", "en": "Traditional fries" },
+          "prix": null,
+          "disponible": true,
+          "tags": []
+        },
+        {
+          "id": "gratin-bananes-jaunes",
+          "nom": { "fr": "Gratin de bananes jaunes", "en": "Yellow plantain gratin" },
+          "prix": null,
+          "disponible": true,
+          "tags": ["local", "signature"]
+        },
+        {
+          "id": "riz-blanc",
+          "nom": { "fr": "Riz blanc", "en": "White rice" },
+          "prix": null,
+          "disponible": true,
+          "tags": []
+        },
+        {
+          "id": "riz-haricots-rouges",
+          "nom": { "fr": "Riz haricots rouges", "en": "Rice and red beans" },
+          "prix": null,
+          "disponible": true,
+          "tags": ["local"]
+        },
+        {
+          "id": "racines",
+          "nom": { "fr": "Racines", "en": "Root vegetables" },
+          "description": { "fr": "Bananes jaunes, bananes vertes", "en": "Yellow and green plantains" },
+          "prix": null,
+          "disponible": true,
+          "tags": ["local"]
+        },
+        {
+          "id": "legumes-vapeur",
+          "nom": { "fr": "Légumes vapeur", "en": "Steamed vegetables" },
+          "description": { "fr": "Haricots verts", "en": "Green beans" },
+          "prix": null,
+          "disponible": true,
+          "tags": []
+        }
+      ]
+    },
+    {
+      "id": "desserts",
+      "type": "groupe",
+      "nom": { "fr": "Nos desserts", "en": "Desserts" },
+      "sous_categories": [
+        {
+          "id": "incontournables",
+          "nom": { "fr": "Nos incontournables", "en": "Our must-haves" },
+          "plats": [
+            {
+              "id": "flan-coco",
+              "nom": { "fr": "Flan au coco", "en": "Coconut flan" },
+              "prix": 9.50,
+              "disponible": true,
+              "tags": ["local", "signature"]
+            },
+            {
+              "id": "creme-brulee",
+              "nom": { "fr": "Crème brûlée", "en": "Crème brûlée" },
+              "prix": 9.80,
+              "disponible": true,
+              "tags": []
+            },
+            {
+              "id": "fondant-chocolat",
+              "nom": { "fr": "Fondant au chocolat", "en": "Chocolate fondant" },
+              "prix": 10.90,
+              "disponible": true,
+              "tags": []
+            },
+            {
+              "id": "assiette-fruits-frais",
+              "nom": { "fr": "Assiette de fruits frais", "en": "Fresh fruit platter" },
+              "prix": 10.80,
+              "disponible": true,
+              "tags": []
+            },
+            {
+              "id": "tatin-ananas",
+              "nom": { "fr": "Tatin à l'ananas", "en": "Pineapple tatin" },
+              "prix": 11.00,
+              "disponible": true,
+              "tags": ["signature"]
+            },
+            {
+              "id": "cafe-the-gourmand",
+              "nom": { "fr": "Café ou thé gourmand", "en": "Gourmet coffee or tea" },
+              "prix": 12.50,
+              "disponible": true,
+              "tags": []
+            }
+          ]
+        },
+        {
+          "id": "glaces",
+          "nom": { "fr": "Nos glaces", "en": "Ice creams" },
+          "type_affichage": "parfums",
+          "prix_info": {
+            "fr": "1 boule : 3,90€ / 2 boules : 6,80€",
+            "en": "1 scoop: €3.90 / 2 scoops: €6.80"
+          },
+          "parfums": [
+            { "fr": "Citron vert", "en": "Lime" },
+            { "fr": "Ananas", "en": "Pineapple" },
+            { "fr": "Vanille pacane", "en": "Pecan vanilla" },
+            { "fr": "Fraise", "en": "Strawberry" },
+            { "fr": "Mangue", "en": "Mango" },
+            { "fr": "Vanille", "en": "Vanilla" },
+            { "fr": "Rhum raisins", "en": "Rum raisin" },
+            { "fr": "Chocolat-amandes", "en": "Chocolate-almond" },
+            { "fr": "Caramel beurre salé", "en": "Salted caramel" },
+            { "fr": "Pistache", "en": "Pistachio" },
+            { "fr": "Café", "en": "Coffee" },
+            { "fr": "Manioc", "en": "Cassava" },
+            { "fr": "Passion", "en": "Passion fruit" },
+            { "fr": "Gingembre", "en": "Ginger" }
+          ]
+        }
+      ]
+    }
+  ],
+  "tags_definitions": {
+    "signature": { "fr": "Plat signature", "en": "Signature dish" },
+    "local": { "fr": "Spécialité antillaise", "en": "Caribbean specialty" },
+    "plat-du-jour": { "fr": "Plat du jour", "en": "Dish of the day" },
+    "rupture": { "fr": "Indisponible", "en": "Unavailable" },
+    "sauce": { "fr": "Sauce au choix", "en": "Choice of sauce" }
+  }
+}

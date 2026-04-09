@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Caprice des Îles — Carte du restaurant">
+  <title>Caprice des Îles — Menu</title>
+
+  <!-- Google Fonts : Playfair Display (titres editorial) + Outfit (corps moderne) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- HEADER : logo + toggle langue -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <img src="img/logo.png" alt="Caprice des Îles" class="logo">
+      </div>
+
+      <!-- Toggle langue FR / EN -->
+      <div class="lang-toggle" role="group" aria-label="Choix de la langue">
+        <button type="button" class="lang-btn active" data-lang="fr" aria-pressed="true">FR</button>
+        <span class="lang-sep" aria-hidden="true">/</span>
+        <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAV : ancres vers les catégories (générée par JS) -->
+  <nav class="category-nav" aria-label="Navigation des catégories">
+    <ul id="category-nav-list"></ul>
+  </nav>
+
+  <!-- MAIN : contenu du menu (généré par JS) -->
+  <main id="menu-container" class="menu-container">
+    <!-- État de chargement par défaut -->
+    <p class="loading-state" id="loading-state">Chargement de la carte…</p>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <p class="footer-name">Caprice des Îles</p>
+    <p class="footer-tagline" data-i18n="footer-tagline">Saveurs des Antilles</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
