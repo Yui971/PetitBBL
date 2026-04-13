@@ -1,5 +1,5 @@
 /* ============================================
-   CAPRICE DES ÎLES — app.js V3
+   CAPRICE DES ÎLES — app.js V4
    ============================================ */
 
 const state = {
@@ -7,7 +7,6 @@ const state = {
   lang: 'fr',
 };
 
-// Temps minimum d'affichage du loader (ms)
 const LOADER_MIN_DURATION = 1400;
 const LOADER_START = performance.now();
 
@@ -20,6 +19,7 @@ const uiText = {
     heroTagline: 'Saveurs authentiques des Antilles',
     reservationLabel: 'Réservation :',
     scrollMenu: 'Découvrir la carte',
+    sidebarLabel: 'La carte',
     footerTagline: 'Saveurs des Antilles',
     footerContactHeading: 'Nous trouver',
     creditsText: 'Design & développement par',
@@ -60,6 +60,7 @@ const uiText = {
     heroTagline: 'Authentic Caribbean flavors',
     reservationLabel: 'Reservations:',
     scrollMenu: 'Discover the menu',
+    sidebarLabel: 'The menu',
     footerTagline: 'Caribbean flavors',
     footerContactHeading: 'Find us',
     creditsText: 'Designed & developed by',
@@ -104,6 +105,7 @@ async function loadMenu() {
     renderAll();
     hideLoaderWithMinDelay();
     setupObservers();
+    setupScrollProgress();
   } catch (err) {
     console.error(err);
     document.getElementById('loading-state').textContent = uiText[state.lang].error;
@@ -111,7 +113,6 @@ async function loadMenu() {
   }
 }
 
-// ---- LOADER ----
 function hideLoaderWithMinDelay() {
   const elapsed = performance.now() - LOADER_START;
   const remaining = Math.max(0, LOADER_MIN_DURATION - elapsed);
@@ -243,44 +244,29 @@ function renderCategorie(cat) {
   }
 }
 
-// ---- NAV ----
-function renderNav() {
-  const navList = document.getElementById('category-nav-list');
-  navList.innerHTML = state.menu.categories
+// ---- NAVS (sidebar + drawer + header) ----
+function renderNavs() {
+  const links = state.menu.categories
     .map(cat => `<li><a href="#cat-${cat.id}" data-cat-id="${cat.id}">${t(cat.nom)}</a></li>`)
     .join('');
-}
 
-// Centrage HORIZONTAL du lien actif dans la nav (ne touche JAMAIS au scroll de la page)
-function centerNavLink(link) {
-  const navContainer = document.querySelector('.category-nav ul');
-  if (!navContainer || !link) return;
-
-  const containerRect = navContainer.getBoundingClientRect();
-  const linkRect = link.getBoundingClientRect();
-
-  // Décalage horizontal entre le centre du lien et le centre du conteneur
-  const linkCenter = linkRect.left + linkRect.width / 2;
-  const containerCenter = containerRect.left + containerRect.width / 2;
-  const delta = linkCenter - containerCenter;
-
-  if (Math.abs(delta) < 5) return; // déjà centré, pas besoin
-
-  navContainer.scrollBy({ left: delta, behavior: 'smooth' });
+  document.getElementById('sidebar-nav-list').innerHTML = links;
+  document.getElementById('drawer-nav-list').innerHTML = links;
+  document.getElementById('header-nav-list').innerHTML = links;
 }
 
 // ---- I18N UI ----
 function updateUIText() {
   const texts = uiText[state.lang];
   const set = (selector, value) => {
-    const el = document.querySelector(selector);
-    if (el) el.textContent = value;
+    document.querySelectorAll(selector).forEach(el => el.textContent = value);
   };
 
   set('[data-i18n="hero-welcome"]', texts.heroWelcome);
   set('[data-i18n="hero-tagline"]', texts.heroTagline);
   set('[data-i18n="reservation-label"]', texts.reservationLabel);
   set('[data-i18n="scroll-menu"]', texts.scrollMenu);
+  set('[data-i18n="sidebar-label"]', texts.sidebarLabel);
   set('[data-i18n="footer-tagline"]', texts.footerTagline);
   set('[data-i18n="footer-contact-heading"]', texts.footerContactHeading);
   set('[data-i18n="credits-text"]', texts.creditsText);
@@ -292,22 +278,21 @@ function renderAll() {
   if (!state.menu) return;
   document.documentElement.lang = uiText[state.lang].htmlLang;
 
-  renderNav();
-  const container = document.getElementById('menu-container');
-  container.innerHTML = state.menu.categories.map(renderCategorie).join('');
+  renderNavs();
+  document.getElementById('menu-container').innerHTML =
+    state.menu.categories.map(renderCategorie).join('');
   updateUIText();
 }
 
-// ---- OBSERVERS ----
-let activeObs = null;
+// ---- OBSERVERS (révélation + nav active) ----
 let revealObs = null;
+let activeObs = null;
 
 function setupObservers() {
-  // Nettoie les anciens observers
-  if (activeObs) activeObs.disconnect();
   if (revealObs) revealObs.disconnect();
+  if (activeObs) activeObs.disconnect();
 
-  // 1. Révélation des catégories au scroll
+  // Révélation au scroll
   revealObs = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -319,24 +304,46 @@ function setupObservers() {
 
   document.querySelectorAll('.category').forEach(cat => revealObs.observe(cat));
 
-  // 2. Highlight nav active selon la catégorie visible
-  const navLinks = document.querySelectorAll('.category-nav a');
+  // Highlight de l'item actif (sidebar + drawer + header nav)
+  const allLinks = document.querySelectorAll('[data-cat-id]');
+
   activeObs = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const id = entry.target.id.replace('cat-', '');
-        let activeLink = null;
-        navLinks.forEach(link => {
-          const isActive = link.dataset.catId === id;
-          link.classList.toggle('active', isActive);
-          if (isActive) activeLink = link;
+        allLinks.forEach(link => {
+          link.classList.toggle('active', link.dataset.catId === id);
         });
-        if (activeLink) centerNavLink(activeLink);
       }
     });
-  }, { rootMargin: '-40% 0px -55% 0px' });
+  }, { rootMargin: '-30% 0px -60% 0px' });
 
   document.querySelectorAll('.category').forEach(cat => activeObs.observe(cat));
+}
+
+// ---- BARRE DE PROGRESSION SIDEBAR ----
+function setupScrollProgress() {
+  const bar = document.getElementById('sidebar-progress-bar');
+  if (!bar) return;
+
+  const update = () => {
+    const menuContainer = document.getElementById('menu-container');
+    if (!menuContainer) return;
+
+    const rect = menuContainer.getBoundingClientRect();
+    const containerTop = rect.top + window.scrollY;
+    const containerHeight = menuContainer.offsetHeight;
+    const scrollPos = window.scrollY + window.innerHeight * 0.4;
+
+    let progress = (scrollPos - containerTop) / containerHeight;
+    progress = Math.max(0, Math.min(1, progress));
+
+    bar.style.height = `${progress * 100}%`;
+  };
+
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
 }
 
 // ---- TOGGLE LANGUE ----
@@ -357,7 +364,6 @@ function setupLangToggle() {
       renderAll();
       setupObservers();
 
-      // Les catégories déjà visibles à l'écran doivent apparaître immédiatement
       requestAnimationFrame(() => {
         document.querySelectorAll('.category').forEach(cat => {
           const rect = cat.getBoundingClientRect();
@@ -381,6 +387,43 @@ function setupBackToTop() {
   });
 }
 
+// ---- DRAWER MOBILE ----
+function setupDrawer() {
+  const drawer = document.getElementById('mobile-drawer');
+  const toggleBtn = document.getElementById('drawer-toggle');
+  const closeBtns = drawer.querySelectorAll('[data-close-drawer]');
+  let lastFocused = null;
+
+  function openDrawer() {
+    lastFocused = document.activeElement;
+    drawer.classList.add('is-open');
+    drawer.setAttribute('aria-hidden', 'false');
+    toggleBtn.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('scroll-locked');
+    setTimeout(() => drawer.querySelector('.drawer-close')?.focus(), 200);
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('is-open');
+    drawer.setAttribute('aria-hidden', 'true');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('scroll-locked');
+    if (lastFocused) lastFocused.focus();
+  }
+
+  toggleBtn.addEventListener('click', openDrawer);
+  closeBtns.forEach(btn => btn.addEventListener('click', closeDrawer));
+
+  // Fermeture auto au clic sur un lien de catégorie
+  drawer.querySelector('#drawer-nav-list').addEventListener('click', (e) => {
+    if (e.target.closest('a')) closeDrawer();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && drawer.classList.contains('is-open')) closeDrawer();
+  });
+}
+
 // ---- MODAL MENTIONS LÉGALES ----
 function setupLegalModal() {
   const modal = document.getElementById('legal-modal');
@@ -392,33 +435,26 @@ function setupLegalModal() {
 
   function openModal() {
     lastFocused = document.activeElement;
-    // Injecte le contenu selon la langue
     body.innerHTML = uiText[state.lang].legalContent;
     title.textContent = uiText[state.lang].legalTitle;
-
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('modal-open');
-
-    // Focus sur le bouton de fermeture
+    document.body.classList.add('scroll-locked');
     setTimeout(() => modal.querySelector('.modal-close').focus(), 100);
   }
 
   function closeModal() {
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('modal-open');
+    document.body.classList.remove('scroll-locked');
     if (lastFocused) lastFocused.focus();
   }
 
   openBtn.addEventListener('click', openModal);
   closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
 
-  // Fermeture avec ESC
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('is-open')) {
-      closeModal();
-    }
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
   });
 }
 
@@ -433,6 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setCurrentYear();
   setupLangToggle();
   setupBackToTop();
+  setupDrawer();
   setupLegalModal();
   loadMenu();
 });
