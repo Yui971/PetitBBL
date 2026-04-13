@@ -20,6 +20,11 @@ const uiText = {
     reservationLabel: 'Réservation :',
     scrollMenu: 'Découvrir la carte',
     sidebarLabel: 'La carte',
+    reviewTitle: 'Vous avez aimé&nbsp;?',
+    reviewText: 'Partagez votre expérience et aidez d\'autres gourmets à découvrir le Caprice des Îles.',
+    reviewBtn: 'Laisser un avis sur Google',
+    reviewSee: 'Voir tous les avis',
+    heroReviewLink: 'Laissez-nous un avis',
     footerTagline: 'Saveurs des Antilles',
     footerContactHeading: 'Nous trouver',
     creditsText: 'Design & développement par',
@@ -61,6 +66,11 @@ const uiText = {
     reservationLabel: 'Reservations:',
     scrollMenu: 'Discover the menu',
     sidebarLabel: 'The menu',
+    reviewTitle: 'Did you enjoy?',
+    reviewText: 'Share your experience and help other food lovers discover Caprice des Îles.',
+    reviewBtn: 'Leave a review on Google',
+    reviewSee: 'See all reviews',
+    heroReviewLink: 'Leave us a review',
     footerTagline: 'Caribbean flavors',
     footerContactHeading: 'Find us',
     creditsText: 'Designed & developed by',
@@ -267,6 +277,12 @@ function updateUIText() {
   set('[data-i18n="reservation-label"]', texts.reservationLabel);
   set('[data-i18n="scroll-menu"]', texts.scrollMenu);
   set('[data-i18n="sidebar-label"]', texts.sidebarLabel);
+  // review-title contient un &nbsp;, on utilise innerHTML
+  document.querySelectorAll('[data-i18n="review-title"]').forEach(el => el.innerHTML = texts.reviewTitle);
+  set('[data-i18n="review-text"]', texts.reviewText);
+  set('[data-i18n="review-btn"]', texts.reviewBtn);
+  set('[data-i18n="review-see"]', texts.reviewSee);
+  set('[data-i18n="hero-review-link"]', texts.heroReviewLink);
   set('[data-i18n="footer-tagline"]', texts.footerTagline);
   set('[data-i18n="footer-contact-heading"]', texts.footerContactHeading);
   set('[data-i18n="credits-text"]', texts.creditsText);
