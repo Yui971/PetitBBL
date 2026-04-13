@@ -69,31 +69,31 @@
   <!-- ========== HERO ========== -->
   <section class="hero" aria-label="Présentation du restaurant">
     <p class="hero-welcome" data-i18n="hero-welcome">Bienvenue au</p>
-    <h1 class="hero-title">Caprice des Îles</h1>
-    <p class="hero-tagline" data-i18n="hero-tagline">Saveurs authentiques des Antilles</p>
+    <h1 class="hero-title" data-bind="nom">Caprice des Îles</h1>
+    <p class="hero-tagline" data-bind="tagline" data-i18n="hero-tagline">Saveurs authentiques des Antilles</p>
 
     <div class="hero-contact">
-      <a href="https://maps.google.com/?q=Av.+du+Pere+Labat,+Baillif+97123,+Guadeloupe" target="_blank" rel="noopener" class="contact-item">
+      <a data-bind-href="adresse_url" href="https://maps.google.com/?q=Av.+du+Pere+Labat,+Baillif+97123,+Guadeloupe" target="_blank" rel="noopener" class="contact-item">
         <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
         </svg>
-        <span>Av. du Père Labat, Baillif 97123, Guadeloupe</span>
+        <span data-bind="adresse">Av. du Père Labat, Baillif 97123, Guadeloupe</span>
       </a>
-      <a href="tel:+590590817497" class="contact-item">
+      <a data-bind-href="tel" href="tel:+590590817497" class="contact-item">
         <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
         </svg>
-        <span><span data-i18n="reservation-label">Réservation :</span> +590 590 81 74 97</span>
+        <span><span data-i18n="reservation-label">Réservation :</span> <span data-bind="telephone">+590 590 81 74 97</span></span>
       </a>
     </div>
 
     <div class="hero-socials" aria-label="Réseaux sociaux">
-      <a href="https://www.facebook.com/capricedesilesguadeloupe/?locale=fr_FR" target="_blank" rel="noopener" class="social-link" aria-label="Facebook">
+      <a data-bind-href="facebook_url" href="https://www.facebook.com/capricedesilesguadeloupe/?locale=fr_FR" target="_blank" rel="noopener" class="social-link" aria-label="Facebook">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/>
         </svg>
       </a>
-      <a href="https://www.instagram.com/le_caprice_des_iles" target="_blank" rel="noopener" class="social-link" aria-label="Instagram">
+      <a data-bind-href="instagram_url" href="https://www.instagram.com/le_caprice_des_iles" target="_blank" rel="noopener" class="social-link" aria-label="Instagram">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
           <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
@@ -151,13 +151,13 @@
       <h2 id="review-title" class="review-title" data-i18n="review-title">Vous avez aimé&nbsp;?</h2>
       <p class="review-text" data-i18n="review-text">Partagez votre expérience et aidez d'autres gourmets à découvrir le Caprice des Îles.</p>
       <div class="review-actions">
-        <a href="https://search.google.com/local/writereview?placeid=ChIJyxcXVitgE4wRYMKE8FP8uS4" target="_blank" rel="noopener" class="review-btn review-btn--primary">
+        <a data-bind-href="review_write" href="https://search.google.com/local/writereview?placeid=ChIJyxcXVitgE4wRYMKE8FP8uS4" target="_blank" rel="noopener" class="review-btn review-btn--primary">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
           </svg>
           <span data-i18n="review-btn">Laisser un avis sur Google</span>
         </a>
-        <a href="https://search.google.com/local/reviews?placeid=ChIJyxcXVitgE4wRYMKE8FP8uS4" target="_blank" rel="noopener" class="review-btn review-btn--secondary">
+        <a data-bind-href="review_see" href="https://search.google.com/local/reviews?placeid=ChIJyxcXVitgE4wRYMKE8FP8uS4" target="_blank" rel="noopener" class="review-btn review-btn--secondary">
           <span data-i18n="review-see">Voir tous les avis</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M7 17L17 7M7 7h10v10"/>
@@ -196,7 +196,7 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-brand">
-        <p class="footer-name">Caprice des Îles</p>
+        <p class="footer-name" data-bind="nom">Caprice des Îles</p>
         <p class="footer-tagline" data-i18n="footer-tagline">Saveurs des Antilles</p>
       </div>
 
@@ -206,7 +206,7 @@
           <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
           </svg>
-          <a href="https://maps.google.com/?q=Av.+du+Pere+Labat,+Baillif+97123,+Guadeloupe" target="_blank" rel="noopener">
+          <a data-bind-href="adresse_url" href="https://maps.google.com/?q=Av.+du+Pere+Labat,+Baillif+97123,+Guadeloupe" target="_blank" rel="noopener" data-bind="adresse">
             Av. du Père Labat<br>Baillif 97123, Guadeloupe
           </a>
         </p>
@@ -214,15 +214,15 @@
           <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
           </svg>
-          <a href="tel:+590590817497">+590 590 81 74 97</a>
+          <a data-bind-href="tel" href="tel:+590590817497" data-bind="telephone">+590 590 81 74 97</a>
         </p>
         <div class="footer-socials" aria-label="Réseaux sociaux">
-          <a href="https://www.facebook.com/capricedesilesguadeloupe/?locale=fr_FR" target="_blank" rel="noopener" class="social-link" aria-label="Facebook">
+          <a data-bind-href="facebook_url" href="https://www.facebook.com/capricedesilesguadeloupe/?locale=fr_FR" target="_blank" rel="noopener" class="social-link" aria-label="Facebook">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/>
             </svg>
           </a>
-          <a href="https://www.instagram.com/le_caprice_des_iles" target="_blank" rel="noopener" class="social-link" aria-label="Instagram">
+          <a data-bind-href="instagram_url" href="https://www.instagram.com/le_caprice_des_iles" target="_blank" rel="noopener" class="social-link" aria-label="Instagram">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
               <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
