@@ -106,21 +106,230 @@ const uiText = {
   },
 };
 
+// ============================================
+// SOURCE DES DONNÉES
+// ============================================
+// Pour changer de Sheet : remplacer SHEET_ID par le nouvel identifiant
+// (la longue chaîne entre /d/ et /edit dans l'URL Google Sheets)
+const SHEET_ID = '1xiQwiEnrxMkEQN18XcNDbTdReTT5BXwqnJvCDJ3-51k';
+const SHEET_BASE = `https://opensheet.elk.sh/${SHEET_ID}`;
+const SHEET_TABS = ['Plats', 'Categories', 'Formules', 'Glaces', 'Config'];
+
+const FALLBACK_JSON = './data/menu.json';
+
 // ---- FETCH ----
 async function loadMenu() {
   try {
-    const response = await fetch('./data/menu.json');
-    if (!response.ok) throw new Error('Fetch failed');
-    state.menu = await response.json();
-    renderAll();
-    hideLoaderWithMinDelay();
-    setupObservers();
-    setupScrollProgress();
+    // Fetch les 5 onglets en parallèle
+    const responses = await Promise.all(
+      SHEET_TABS.map(tab => fetch(`${SHEET_BASE}/${tab}`))
+    );
+
+    // Vérifie que tout est OK
+    if (responses.some(r => !r.ok)) {
+      throw new Error('Opensheet fetch failed');
+    }
+
+    const [plats, categories, formules, glaces, config] = await Promise.all(
+      responses.map(r => r.json())
+    );
+
+    // Transforme les données tabulaires en structure menu.json
+    state.menu = buildMenuFromSheets({ plats, categories, formules, glaces, config });
+
+    console.log('✓ Menu chargé depuis Google Sheets');
   } catch (err) {
-    console.error(err);
-    document.getElementById('loading-state').textContent = uiText[state.lang].error;
-    hideLoaderWithMinDelay();
+    console.warn('Opensheet indisponible, fallback sur menu.json local:', err);
+    // Fallback : charge le JSON local
+    try {
+      const response = await fetch(FALLBACK_JSON);
+      if (!response.ok) throw new Error('Fallback fetch failed');
+      state.menu = await response.json();
+      console.log('✓ Menu chargé depuis fallback local');
+    } catch (fallbackErr) {
+      console.error(fallbackErr);
+      document.getElementById('loading-state').textContent = uiText[state.lang].error;
+      hideLoaderWithMinDelay();
+      return;
+    }
   }
+
+  renderAll();
+  hideLoaderWithMinDelay();
+  setupObservers();
+  setupScrollProgress();
+}
+
+// ============================================
+// TRANSFORMATION Sheets → menu.json
+// ============================================
+function buildMenuFromSheets({ plats, categories, formules, glaces, config }) {
+  // ---- 1. Config → clés/valeurs ----
+  const cfg = {};
+  config.forEach(row => {
+    cfg[row.cle] = { fr: row.valeur_fr || '', en: row.valeur_en || row.valeur_fr || '' };
+  });
+
+  // ---- 2. Helpers ----
+  const parseBool = v => String(v || '').toUpperCase() === 'OUI';
+  const parsePrix = v => {
+    if (v === null || v === undefined || v === '') return null;
+    // Gère les prix stockés en string avec virgule OU point
+    const n = parseFloat(String(v).replace(',', '.'));
+    return isNaN(n) ? null : n;
+  };
+  const parseTags = v => {
+    if (!v) return [];
+    return String(v).split(',').map(t => t.trim()).filter(Boolean);
+  };
+  const bilingual = (fr, en) => ({ fr: fr || '', en: en || fr || '' });
+
+  // ---- 3. Index des catégories par id ----
+  const catById = {};
+  categories.forEach(cat => {
+    catById[cat.id] = {
+      raw: cat,
+      id: cat.id,
+      type: cat.type,
+      parent: cat.parent || null,
+      nom: bilingual(cat.nom_fr, cat.nom_en),
+      sous_titre: (cat.sous_titre_fr || cat.sous_titre_en)
+        ? bilingual(cat.sous_titre_fr, cat.sous_titre_en) : null,
+      note_globale: (cat.note_fr || cat.note_en)
+        ? bilingual(cat.note_fr, cat.note_en) : null,
+      prix: parsePrix(cat.prix),
+      ordre: parseFloat(cat.ordre) || 999,
+      plats: [],
+      sous_categories: [],
+      inclus: [],
+    };
+  });
+
+  // ---- 4. Rattache les plats à leur catégorie ----
+  plats.forEach(plat => {
+    const cat = catById[plat.categorie];
+    if (!cat) {
+      console.warn(`Plat "${plat.id}" a une catégorie inconnue: ${plat.categorie}`);
+      return;
+    }
+    const platObj = {
+      id: plat.id,
+      nom: bilingual(plat.nom_fr, plat.nom_en),
+      prix: parsePrix(plat.prix),
+      disponible: parseBool(plat.dispo),
+      tags: parseTags(plat.tags),
+    };
+    if (plat.description_fr || plat.description_en) {
+      platObj.description = bilingual(plat.description_fr, plat.description_en);
+    }
+    cat.plats.push(platObj);
+  });
+
+  // ---- 5. Rattache les items de formules ----
+  formules
+    .sort((a, b) => (parseFloat(a.ordre) || 0) - (parseFloat(b.ordre) || 0))
+    .forEach(item => {
+      const cat = catById[item.categorie_id];
+      if (!cat) return;
+      cat.inclus.push(bilingual(item.item_fr, item.item_en));
+    });
+
+  // ---- 6. Rattache les sous-catégories à leur parent ----
+  Object.values(catById).forEach(cat => {
+    if (cat.type === 'sous-categorie' && cat.parent) {
+      const parent = catById[cat.parent];
+      if (parent) parent.sous_categories.push(cat);
+    }
+  });
+
+  // ---- 7. Cas spécial : glaces (parfums dans sous-catégorie "glaces") ----
+  const glacesCategorie = catById['glaces'];
+  if (glacesCategorie) {
+    glacesCategorie.type_affichage = 'parfums';
+    glacesCategorie.parfums = glaces
+      .filter(g => parseBool(g.dispo))
+      .sort((a, b) => (parseFloat(a.ordre) || 0) - (parseFloat(b.ordre) || 0))
+      .map(g => bilingual(g.nom_fr, g.nom_en));
+    glacesCategorie.prix_info = cfg.glaces_prix_info || null;
+  }
+
+  // ---- 8. Construit le tableau final des catégories top-level ----
+  // On ne garde que celles qui n'ont pas de parent (les "racines")
+  const topLevel = Object.values(catById)
+    .filter(cat => !cat.parent)
+    .sort((a, b) => a.ordre - b.ordre);
+
+  // Nettoie la structure pour qu'elle colle au format menu.json attendu
+  const finalCategories = topLevel.map(cat => cleanCategory(cat));
+
+  return {
+    restaurant: {
+      nom: cfg.nom_restaurant?.fr || 'Caprice des Îles',
+      tagline: cfg.tagline || null,
+      // adresse, tel, URLs : valeurs simples (pas bilingues)
+      adresse: cfg.adresse?.fr || '',
+      telephone: cfg.telephone?.fr || '',
+      facebook_url: cfg.facebook_url?.fr || '',
+      instagram_url: cfg.instagram_url?.fr || '',
+      google_place_id: cfg.google_place_id?.fr || '',
+      devise_symbole: cfg.devise_symbole?.fr || '€',
+      symbole_devise: cfg.devise_symbole?.fr || '€',
+      langues_disponibles: ['fr', 'en'],
+    },
+    categories: finalCategories,
+    tags_definitions: {
+      signature: { fr: 'Plat signature', en: 'Signature dish' },
+      local: { fr: 'Spécialité antillaise', en: 'Caribbean specialty' },
+      'plat-du-jour': { fr: 'Plat du jour', en: 'Dish of the day' },
+      rupture: { fr: 'Indisponible', en: 'Unavailable' },
+      sauce: { fr: 'Sauce au choix', en: 'Choice of sauce' },
+    },
+  };
+}
+
+// Nettoie une catégorie (enlève les champs internes, adapte selon le type)
+function cleanCategory(cat) {
+  const base = {
+    id: cat.id,
+    type: cat.type,
+    nom: cat.nom,
+  };
+  if (cat.sous_titre) base.sous_titre = cat.sous_titre;
+  if (cat.note_globale) base.note_globale = cat.note_globale;
+
+  if (cat.type === 'formule') {
+    base.prix = cat.prix;
+    base.inclus = cat.inclus;
+    base.disponible = true;
+  } else if (cat.type === 'groupe') {
+    // Un groupe contient des sous-catégories
+    base.sous_categories = cat.sous_categories
+      .sort((a, b) => a.ordre - b.ordre)
+      .map(sub => cleanSousCategorie(sub));
+  } else {
+    // standard
+    base.plats = cat.plats;
+  }
+  return base;
+}
+
+function cleanSousCategorie(sub) {
+  // Cas spécial glaces
+  if (sub.type_affichage === 'parfums') {
+    return {
+      id: sub.id,
+      nom: sub.nom,
+      type_affichage: 'parfums',
+      prix_info: sub.prix_info,
+      parfums: sub.parfums,
+    };
+  }
+  // Sous-catégorie classique avec plats
+  return {
+    id: sub.id,
+    nom: sub.nom,
+    plats: sub.plats,
+  };
 }
 
 function hideLoaderWithMinDelay() {
@@ -294,10 +503,60 @@ function renderAll() {
   if (!state.menu) return;
   document.documentElement.lang = uiText[state.lang].htmlLang;
 
+  applyRestaurantBindings();
   renderNavs();
   document.getElementById('menu-container').innerHTML =
     state.menu.categories.map(renderCategorie).join('');
   updateUIText();
+}
+
+// ---- DATA BINDING depuis Config ----
+// Remplit tous les éléments [data-bind] et [data-bind-href]
+// avec les infos du restaurant stockées dans state.menu.restaurant
+function applyRestaurantBindings() {
+  const r = state.menu.restaurant || {};
+
+  // Construit les URLs spéciales à partir des infos
+  const urls = {
+    adresse_url: r.adresse
+      ? `https://maps.google.com/?q=${encodeURIComponent(r.adresse)}`
+      : null,
+    tel: r.telephone
+      ? `tel:${String(r.telephone).replace(/\s/g, '')}`
+      : null,
+    facebook_url: r.facebook_url || null,
+    instagram_url: r.instagram_url || null,
+    review_write: r.google_place_id
+      ? `https://search.google.com/local/writereview?placeid=${r.google_place_id}`
+      : null,
+    review_see: r.google_place_id
+      ? `https://search.google.com/local/reviews?placeid=${r.google_place_id}`
+      : null,
+  };
+
+  // Map des valeurs texte bindables
+  const values = {
+    nom: r.nom || 'Caprice des Îles',
+    tagline: r.tagline ? t(r.tagline) : '',
+    adresse: r.adresse || '',
+    telephone: r.telephone || '',
+  };
+
+  // Applique les textes
+  document.querySelectorAll('[data-bind]').forEach(el => {
+    const key = el.dataset.bind;
+    if (values[key] !== undefined && values[key] !== '') {
+      el.textContent = values[key];
+    }
+  });
+
+  // Applique les liens href
+  document.querySelectorAll('[data-bind-href]').forEach(el => {
+    const key = el.dataset.bindHref;
+    if (urls[key]) {
+      el.href = urls[key];
+    }
+  });
 }
 
 // ---- OBSERVERS (révélation + nav active) ----
