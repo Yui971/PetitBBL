@@ -25,6 +25,7 @@ const uiText = {
     reviewBtn: 'Laisser un avis sur Google',
     reviewSee: 'Voir tous les avis',
     heroReviewLink: 'Laissez-nous un avis',
+    pwaInstall: "Installer l'app",
     footerTagline: 'Saveurs des Antilles',
     footerContactHeading: 'Nous trouver',
     creditsText: 'Design & développement par',
@@ -71,6 +72,7 @@ const uiText = {
     reviewBtn: 'Leave a review on Google',
     reviewSee: 'See all reviews',
     heroReviewLink: 'Leave us a review',
+    pwaInstall: 'Install the app',
     footerTagline: 'Caribbean flavors',
     footerContactHeading: 'Find us',
     creditsText: 'Designed & developed by',
@@ -492,6 +494,7 @@ function updateUIText() {
   set('[data-i18n="review-btn"]', texts.reviewBtn);
   set('[data-i18n="review-see"]', texts.reviewSee);
   set('[data-i18n="hero-review-link"]', texts.heroReviewLink);
+  set('[data-i18n="pwa-install"]', texts.pwaInstall);
   set('[data-i18n="footer-tagline"]', texts.footerTagline);
   set('[data-i18n="footer-contact-heading"]', texts.footerContactHeading);
   set('[data-i18n="credits-text"]', texts.creditsText);
@@ -739,6 +742,79 @@ function setCurrentYear() {
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 }
 
+// ============================================
+// PWA — Service worker, install prompt, iOS hint
+// ============================================
+
+// Enregistre le service worker (silencieux, sans interférer avec le reste)
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  // On attend que la page soit chargée pour ne pas concurrencer le rendu initial
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('✓ Service worker enregistré', reg.scope))
+      .catch(err => console.warn('Service worker non enregistré:', err));
+  });
+}
+
+// Bouton d'installation natif (Chrome/Edge/Android)
+let deferredInstallPrompt = null;
+
+function setupPwaInstall() {
+  const wrap = document.getElementById('pwa-install-wrap');
+  const btn = document.getElementById('pwa-install-btn');
+  if (!wrap || !btn) return;
+
+  // Le navigateur signale qu'une installation est possible
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();          // empêche la mini-bar native automatique
+    deferredInstallPrompt = e;
+    wrap.hidden = false;          // affiche notre bouton discret
+  });
+
+  btn.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    console.log(`PWA install: ${outcome}`);
+    deferredInstallPrompt = null;
+    wrap.hidden = true;
+  });
+
+  // Si l'app est déjà installée, on cache le bouton
+  window.addEventListener('appinstalled', () => {
+    wrap.hidden = true;
+    deferredInstallPrompt = null;
+  });
+}
+
+// Popup iOS one-shot (Safari ne supporte pas beforeinstallprompt)
+function setupIosInstallHint() {
+  const hint = document.getElementById('ios-install-hint');
+  const closeBtn = document.getElementById('ios-hint-close');
+  if (!hint) return;
+
+  // Détection : iOS Safari (iPhone/iPad), pas déjà en mode standalone
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+  const alreadyDismissed = localStorage.getItem('caprice-ios-hint-dismissed') === '1';
+
+  if (!isIos || isStandalone || alreadyDismissed) return;
+
+  // On affiche après 3 secondes pour laisser l'utilisateur découvrir le menu d'abord
+  setTimeout(() => {
+    hint.hidden = false;
+    requestAnimationFrame(() => hint.classList.add('is-visible'));
+  }, 3000);
+
+  closeBtn.addEventListener('click', () => {
+    hint.classList.remove('is-visible');
+    setTimeout(() => { hint.hidden = true; }, 400);
+    localStorage.setItem('caprice-ios-hint-dismissed', '1');
+  });
+}
+
 // ---- INIT ----
 document.addEventListener('DOMContentLoaded', () => {
   setCurrentYear();
@@ -746,5 +822,8 @@ document.addEventListener('DOMContentLoaded', () => {
   setupBackToTop();
   setupDrawer();
   setupLegalModal();
+  setupPwaInstall();
+  setupIosInstallHint();
   loadMenu();
+  registerServiceWorker();
 });
