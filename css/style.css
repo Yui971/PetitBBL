@@ -1399,3 +1399,97 @@ a { color: inherit; text-decoration: none; }
     transform: none;
   }
 }
+
+/* ============================================
+   PWA — Bouton install + popup iOS
+   ============================================ */
+.footer-pwa-wrap {
+  display: inline;
+}
+
+.footer-pwa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  vertical-align: middle;
+}
+
+.footer-pwa-btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Popup iOS one-shot */
+.ios-hint {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  z-index: 200;
+  max-width: calc(100% - 32px);
+  width: max-content;
+  background: var(--noir-texte);
+  color: var(--creme);
+  padding: 0.85rem 2.5rem 0.85rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid var(--or-etoile);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease-out);
+}
+
+.ios-hint.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.ios-hint-text {
+  font-family: var(--font-corps);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ios-hint-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--or-etoile);
+  flex-shrink: 0;
+}
+
+.ios-hint-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--creme);
+  border-radius: 50%;
+  opacity: 0.7;
+  transition: opacity 0.2s var(--ease);
+}
+
+.ios-hint-close:hover {
+  opacity: 1;
+}
+
+.ios-hint-close svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* En mode standalone (PWA installée), on cache certains éléments */
+@media (display-mode: standalone) {
+  .footer-pwa-wrap { display: none !important; }
+  .ios-hint { display: none !important; }
+}
+
